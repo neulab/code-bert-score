@@ -51,6 +51,8 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 
+import wandb
+wandb.init(settings=wandb.Settings(start_method="fork"))
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 # check_min_version("4.22.0.dev0")
@@ -399,7 +401,10 @@ def main():
         column_names = raw_datasets["train"].column_names
     else:
         column_names = raw_datasets["validation"].column_names
-    text_column_name = "text" if "text" in column_names else column_names[0]
+    # Uri: changed this line to support the https://huggingface.co/datasets/codeparrot/github-code dataset,
+    # Although it should have worked without this change as well, by taking column_names[0]
+    # text_column_name = "text" if "text" in column_names else column_names[0]
+    text_column_name = "code" if "code" in column_names else column_names[0]
 
     if data_args.max_seq_length is None:
         max_seq_length = tokenizer.model_max_length
