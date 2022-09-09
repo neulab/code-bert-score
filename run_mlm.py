@@ -287,7 +287,7 @@ def main():
             data_args.dataset_config_name,
             cache_dir=model_args.cache_dir,
             use_auth_token=True if model_args.use_auth_token else None,
-            streaming=True
+            streaming=False
         )
         # if "validation" not in raw_datasets.keys():
         #     raw_datasets["validation"] = load_dataset(
@@ -397,13 +397,10 @@ def main():
 
     # Preprocessing the datasets.
     # First we tokenize all the texts.
-    # Uri: when using streaming=True we cannot take raw_datasets["train"].column_names,
-    # so in the meantime I am hardcoding the column names of codeparrot/github-code-clean
-    column_names = ['code', 'repo_name', 'path', 'language', 'license', 'size']
-    # if training_args.do_train:
-    #     column_names = raw_datasets["train"].column_names
-    # else:
-    #     column_names = raw_datasets["validation"].column_names
+    if training_args.do_train:
+        column_names = raw_datasets["train"].column_names
+    else:
+        column_names = raw_datasets["validation"].column_names
     # Uri: changed this line to support the https://huggingface.co/datasets/codeparrot/github-code dataset,
     # Although it should have worked without this change as well, by taking column_names[0]
     # text_column_name = "text" if "text" in column_names else column_names[0]
