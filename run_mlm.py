@@ -289,22 +289,22 @@ def main():
             use_auth_token=True if model_args.use_auth_token else None,
             streaming=True
         )
-        if "validation" not in raw_datasets.keys():
-            raw_datasets["validation"] = load_dataset(
-                data_args.dataset_name,
-                data_args.dataset_config_name,
-                split=f"train[:{data_args.validation_split_percentage}%]",
-                cache_dir=model_args.cache_dir,
-                use_auth_token=True if model_args.use_auth_token else None
-            )
-            raw_datasets["train"] = load_dataset(
-                data_args.dataset_name,
-                data_args.dataset_config_name,
-                split=f"train[{data_args.validation_split_percentage}%:]",
-                cache_dir=model_args.cache_dir,
-                use_auth_token=True if model_args.use_auth_token else None,
-                streaming=True
-            )
+        # if "validation" not in raw_datasets.keys():
+        #     raw_datasets["validation"] = load_dataset(
+        #         data_args.dataset_name,
+        #         data_args.dataset_config_name,
+        #         split=f"train[:{data_args.validation_split_percentage}%]",
+        #         cache_dir=model_args.cache_dir,
+        #         use_auth_token=True if model_args.use_auth_token else None
+        #     )
+        #     raw_datasets["train"] = load_dataset(
+        #         data_args.dataset_name,
+        #         data_args.dataset_config_name,
+        #         split=f"train[{data_args.validation_split_percentage}%:]",
+        #         cache_dir=model_args.cache_dir,
+        #         use_auth_token=True if model_args.use_auth_token else None,
+        #         streaming=True
+        #     )
     else:
         data_files = {}
         if data_args.train_file is not None:
