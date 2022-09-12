@@ -29,13 +29,13 @@ SCIBERT_URL_DICT = {
 
 lang2model = defaultdict(lambda: "microsoft/codebert-base")
 lang2model.update(
-    # {"c": "codebert_c_100k"}
+    {"c": "codebert_c_100k_base"}
 )
 
 
 model2layers = {
     "microsoft/codebert-base": 10,
-    "codebert_c_100k": 10,
+    "codebert_c_100k_base": 10,
     # "bert-base-uncased": 9,  # 0.6925188074454226
     # "bert-large-uncased": 18,  # 0.7210358126642836
     # "bert-base-cased-finetuned-mrpc": 9,  # 0.6721947475618048
