@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 from collections import defaultdict
 from scipy.stats import pearsonr
 
-import bert_score
+import code_bert_score
 
 
 def get_wmt16(lang_pair, data_folder="wmt16"):
@@ -39,13 +39,13 @@ def get_wmt16(lang_pair, data_folder="wmt16"):
     return gold_scores, all_refs, all_hyps
 
 
-def get_wmt16_seg_to_bert_score(lang_pair, network, num_layers, idf=False, cache=False, data_folder="wmt16"):
+def get_wmt16_seg_to_code_bert_score(lang_pair, network, num_layers, idf=False, cache=False, data_folder="wmt16"):
     os.makedirs(f"cache_score/{network}", exist_ok=True)
     path = "cache_score/{}/wmt16_seg_to_{}_{}.pkl".format(network, *lang_pair.split("-"))
 
     gold_scores, refs, cands = get_wmt16(lang_pair, data_folder=data_folder)
     model_type = network
-    scores_idf = bert_score.score(
+    scores_idf = code_bert_score.score(
         cands, refs, model_type=model_type, num_layers=num_layers, verbose=False, idf=idf, all_layers=True
     )
     scores = list(scores_idf)
@@ -71,7 +71,7 @@ def main():
     for network in networks:
         results = defaultdict(dict)
         for lang_pair in tqdm(args.lang_pairs):
-            scores, gold_scores = get_wmt16_seg_to_bert_score(lang_pair, network, 100, idf=args.idf, cache=False)
+            scores, gold_scores = get_wmt16_seg_to_code_bert_score(lang_pair, network, 100, idf=args.idf, cache=False)
             for i, score in enumerate(scores[2]):
                 results[lang_pair + " " + str(i)]["%s %s" % (network, "F")] = pearsonr(score, gold_scores)[0]
 

@@ -1,1 +1,1 @@
-recursive-include bert_score/rescale_baseline *
+recursive-include code_bert_score/rescale_baseline *

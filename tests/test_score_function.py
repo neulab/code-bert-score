@@ -1,6 +1,6 @@
 import unittest
 import torch
-import bert_score
+import code_bert_score
 from transformers import __version__ as ht_version
 
 EPS = 1e-5
@@ -19,7 +19,7 @@ refs = [
 
 class TestScore(unittest.TestCase):
     def test_score(self):
-        (P, R, F), hash_code = bert_score.score(
+        (P, R, F), hash_code = code_bert_score.score(
             cands, refs, model_type="roberta-large", num_layers=17, idf=False, batch_size=3, return_hash=True
         )
         # print(P.tolist(), R.tolist(), F.tolist())
@@ -28,7 +28,7 @@ class TestScore(unittest.TestCase):
         self.assertTrue(torch.is_tensor(R))
         self.assertTrue(torch.is_tensor(F))
         self.assertEqual(
-            hash_code, f"roberta-large_L17_no-idf_version={bert_score.__version__}(hug_trans={ht_version})"
+            hash_code, f"roberta-large_L17_no-idf_version={code_bert_score.__version__}(hug_trans={ht_version})"
         )
         self.assertTrue(
             (P - torch.tensor([0.9843302369117737, 0.9832239747047424, 0.9120386242866516])).abs_().max() < EPS
@@ -41,7 +41,7 @@ class TestScore(unittest.TestCase):
         )
 
     def test_idf_score(self):
-        (P, R, F), hash_code = bert_score.score(
+        (P, R, F), hash_code = code_bert_score.score(
             cands, refs, model_type="roberta-large", num_layers=17, idf=True, batch_size=3, return_hash=True
         )
         # print(P.tolist(), R.tolist(), F.tolist())
@@ -49,7 +49,7 @@ class TestScore(unittest.TestCase):
         self.assertTrue(torch.is_tensor(P))
         self.assertTrue(torch.is_tensor(R))
         self.assertTrue(torch.is_tensor(F))
-        self.assertEqual(hash_code, f"roberta-large_L17_idf_version={bert_score.__version__}(hug_trans={ht_version})")
+        self.assertEqual(hash_code, f"roberta-large_L17_idf_version={code_bert_score.__version__}(hug_trans={ht_version})")
         self.assertTrue(
             (P - torch.tensor([0.9837872385978699, 0.9754738807678223, 0.8947395086288452])).abs_().max() < EPS
         )
@@ -61,7 +61,7 @@ class TestScore(unittest.TestCase):
         )
 
     def test_score_rescale(self):
-        (P, R, F), hash_code = bert_score.score(
+        (P, R, F), hash_code = code_bert_score.score(
             cands,
             refs,
             model_type="roberta-large",
@@ -78,7 +78,7 @@ class TestScore(unittest.TestCase):
         self.assertTrue(torch.is_tensor(R))
         self.assertTrue(torch.is_tensor(F))
         self.assertEqual(
-            hash_code, f"roberta-large_L17_no-idf_version={bert_score.__version__}(hug_trans={ht_version})-rescaled"
+            hash_code, f"roberta-large_L17_no-idf_version={code_bert_score.__version__}(hug_trans={ht_version})-rescaled"
         )
         self.assertTrue(
             (P - torch.tensor([0.907000780105591, 0.900435566902161, 0.477955609560013])).abs_().max() < EPS
@@ -91,7 +91,7 @@ class TestScore(unittest.TestCase):
         )
 
     def test_idf_score_rescale(self):
-        (P, R, F), hash_code = bert_score.score(
+        (P, R, F), hash_code = code_bert_score.score(
             cands,
             refs,
             model_type="roberta-large",
@@ -108,7 +108,7 @@ class TestScore(unittest.TestCase):
         self.assertTrue(torch.is_tensor(R))
         self.assertTrue(torch.is_tensor(F))
         self.assertEqual(
-            hash_code, f"roberta-large_L17_idf_version={bert_score.__version__}(hug_trans={ht_version})-rescaled"
+            hash_code, f"roberta-large_L17_idf_version={code_bert_score.__version__}(hug_trans={ht_version})-rescaled"
         )
         self.assertTrue(
             (P - torch.tensor([0.903778135776520, 0.854439020156860, 0.375287383794785])).abs_().max() < EPS
@@ -123,10 +123,10 @@ class TestScore(unittest.TestCase):
     def test_multi_refs(self):
         cands = ["I like lemons."]
         refs = [["I am proud of you.", "I love lemons.", "Go go go."]]
-        P_mul, R_mul, F_mul = bert_score.score(
+        P_mul, R_mul, F_mul = code_bert_score.score(
             cands, refs, batch_size=3, return_hash=False, lang="en", rescale_with_baseline=True
         )
-        P_best, R_best, F_best = bert_score.score(
+        P_best, R_best, F_best = code_bert_score.score(
             cands, [refs[0][1]], batch_size=3, return_hash=False, lang="en", rescale_with_baseline=True
         )
         self.assertTrue((P_mul - P_best).abs_().max() < EPS)
@@ -143,7 +143,7 @@ class TestScore(unittest.TestCase):
             ["I am proud of you.", "Go go go.", "Go", "Go to school"],
             ["test"],
         ]
-        P_mul, R_mul, F_mul = bert_score.score(
+        P_mul, R_mul, F_mul = code_bert_score.score(
             cands, refs, batch_size=3, return_hash=False, lang="en", rescale_with_baseline=True
         )
 

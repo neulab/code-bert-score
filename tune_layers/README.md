@@ -19,4 +19,4 @@ The last three lines of `best_layers_log.txt` would be
 'albert-base-v2': 9, # 0.6682362357086912
 ```
 which shows the model name, the best number of layers, and the pearson correlation with human judgement.
-These can be copied and pasted into `model2layers` in `bert_score/utils.py`.
+These can be copied and pasted into `model2layers` in `code_bert_score/utils.py`.

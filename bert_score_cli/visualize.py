@@ -5,7 +5,7 @@ import argparse
 import torch
 from collections import defaultdict
 
-import bert_score
+import code_bert_score
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
 
     args = parser.parse_args()
 
-    bert_score.plot_example(
+    code_bert_score.plot_example(
         args.cand,
         args.ref,
         model_type=args.model,

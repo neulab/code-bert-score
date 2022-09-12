@@ -40,7 +40,7 @@ Clearly, the rescaling produces a more readable output. Occationally, some of th
 
 We package this feature into our library (>=0.3.0). Here's an example on how to use it (note that the language needs to be specified in order to use this feature):
 ```python
-out = bert_score.score(
+out = code_bert_score.score(
     cands, refs, 
     rescale_with_baseline=True, lang="en"
 )

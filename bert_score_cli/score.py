@@ -3,7 +3,7 @@ import os
 import argparse
 import torch
 
-import bert_score
+import code_bert_score
 
 
 def main():
@@ -55,7 +55,7 @@ def main():
         refs = [args.ref]
         assert not args.idf, "do not support idf mode for a single pair of sentences"
 
-    all_preds, hash_code = bert_score.score(
+    all_preds, hash_code = code_bert_score.score(
         cands,
         refs,
         model_type=args.model,

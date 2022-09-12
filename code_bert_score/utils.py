@@ -15,6 +15,7 @@ from transformers import AutoModel, GPT2Tokenizer
 
 from . import __version__
 from transformers import __version__ as trans_version
+import string
 
 __all__ = []
 
@@ -26,75 +27,77 @@ SCIBERT_URL_DICT = {
 }
 
 
-lang2model = defaultdict(lambda: "bert-base-multilingual-cased")
+lang2model = defaultdict(lambda: "microsoft/codebert-base")
 lang2model.update(
-    {"en": "roberta-large", "zh": "bert-base-chinese", "en-sci": "scibert-scivocab-uncased",}
+    # {"c": "codebert_c_100k"}
 )
 
 
 model2layers = {
-    "bert-base-uncased": 9,  # 0.6925188074454226
-    "bert-large-uncased": 18,  # 0.7210358126642836
-    "bert-base-cased-finetuned-mrpc": 9,  # 0.6721947475618048
-    "bert-base-multilingual-cased": 9,  # 0.6680687802637132
-    "bert-base-chinese": 8,
-    "roberta-base": 10,  # 0.706288719158983
-    "roberta-large": 17,  # 0.7385974720781534
-    "roberta-large-mnli": 19,  # 0.7535618640417984
-    "roberta-base-openai-detector": 7,  # 0.7048158349432633
-    "roberta-large-openai-detector": 15,  # 0.7462770207355116
-    "xlnet-base-cased": 5,  # 0.6630103662114238
-    "xlnet-large-cased": 7,  # 0.6598800720297179
-    "xlm-mlm-en-2048": 6,  # 0.651262570131464
-    "xlm-mlm-100-1280": 10,  # 0.6475166424401905
-    "scibert-scivocab-uncased": 8,  # 0.6590354319927313
-    "scibert-scivocab-cased": 9,  # 0.6536375053937445
-    "scibert-basevocab-uncased": 9,  # 0.6748944832703548
-    "scibert-basevocab-cased": 9,  # 0.6524624150542374
-    "distilroberta-base": 5,  # 0.6797558139322964
-    "distilbert-base-uncased": 5,  # 0.6756659152782033
-    "distilbert-base-uncased-distilled-squad": 4,  # 0.6718318036382493
-    "distilbert-base-multilingual-cased": 5,  # 0.6178131050889238
-    "albert-base-v1": 10,  # 0.654237567249745
-    "albert-large-v1": 17,  # 0.6755890754323239
-    "albert-xlarge-v1": 16,  # 0.7031844211905911
-    "albert-xxlarge-v1": 8,  # 0.7508642218461096
-    "albert-base-v2": 9,  # 0.6682455591837927
-    "albert-large-v2": 14,  # 0.7008537594374035
-    "albert-xlarge-v2": 13,  # 0.7317228357869254
-    "albert-xxlarge-v2": 8,  # 0.7505160257184014
-    "xlm-roberta-base": 9,  # 0.6506799445871697
-    "xlm-roberta-large": 17,  # 0.6941551437476826
-    "google/electra-small-generator": 9,  # 0.6659421842117754
-    "google/electra-small-discriminator": 11,  # 0.6534639151385759
-    "google/electra-base-generator": 10,  # 0.6730033453857188
-    "google/electra-base-discriminator": 9,  # 0.7032089590812965
-    "google/electra-large-generator": 18,  # 0.6813370013104459
-    "google/electra-large-discriminator": 14,  # 0.6896675824733477
-    "google/bert_uncased_L-2_H-128_A-2": 1,  # 0.5887998733228855
-    "google/bert_uncased_L-2_H-256_A-4": 1,  # 0.6114863547661203
-    "google/bert_uncased_L-2_H-512_A-8": 1,  # 0.6177345529192847
-    "google/bert_uncased_L-2_H-768_A-12": 2,  # 0.6191261237956839
-    "google/bert_uncased_L-4_H-128_A-2": 3,  # 0.6076202863798991
-    "google/bert_uncased_L-4_H-256_A-4": 3,  # 0.6205239036810148
-    "google/bert_uncased_L-4_H-512_A-8": 3,  # 0.6375351621856903
-    "google/bert_uncased_L-4_H-768_A-12": 3,  # 0.6561849979644787
-    "google/bert_uncased_L-6_H-128_A-2": 5,  # 0.6200458425360283
-    "google/bert_uncased_L-6_H-256_A-4": 5,  # 0.6277501629539081
-    "google/bert_uncased_L-6_H-512_A-8": 5,  # 0.641952305130849
-    "google/bert_uncased_L-6_H-768_A-12": 5,  # 0.6762186226247106
-    "google/bert_uncased_L-8_H-128_A-2": 7,  # 0.6186876506711779
-    "google/bert_uncased_L-8_H-256_A-4": 7,  # 0.6447993208267708
-    "google/bert_uncased_L-8_H-512_A-8": 6,  # 0.6489729408169956
-    "google/bert_uncased_L-8_H-768_A-12": 7,  # 0.6705203359541737
-    "google/bert_uncased_L-10_H-128_A-2": 8,  # 0.6126762064125278
-    "google/bert_uncased_L-10_H-256_A-4": 8,  # 0.6376350032576573
-    "google/bert_uncased_L-10_H-512_A-8": 9,  # 0.6579006292799915
-    "google/bert_uncased_L-10_H-768_A-12": 8,  # 0.6861146692220176
-    "google/bert_uncased_L-12_H-128_A-2": 10,  # 0.6184105693383591
-    "google/bert_uncased_L-12_H-256_A-4": 11,  # 0.6374004994430261
-    "google/bert_uncased_L-12_H-512_A-8": 10,  # 0.65880012149526
-    "google/bert_uncased_L-12_H-768_A-12": 9,  # 0.675911357700092
+    "microsoft/codebert-base": 10,
+    "codebert_c_100k": 10,
+    # "bert-base-uncased": 9,  # 0.6925188074454226
+    # "bert-large-uncased": 18,  # 0.7210358126642836
+    # "bert-base-cased-finetuned-mrpc": 9,  # 0.6721947475618048
+    # "bert-base-multilingual-cased": 9,  # 0.6680687802637132
+    # "bert-base-chinese": 8,
+    # "roberta-base": 10,  # 0.706288719158983
+    # "roberta-large": 17,  # 0.7385974720781534
+    # "roberta-large-mnli": 19,  # 0.7535618640417984
+    # "roberta-base-openai-detector": 7,  # 0.7048158349432633
+    # "roberta-large-openai-detector": 15,  # 0.7462770207355116
+    # "xlnet-base-cased": 5,  # 0.6630103662114238
+    # "xlnet-large-cased": 7,  # 0.6598800720297179
+    # "xlm-mlm-en-2048": 6,  # 0.651262570131464
+    # "xlm-mlm-100-1280": 10,  # 0.6475166424401905
+    # "scibert-scivocab-uncased": 8,  # 0.6590354319927313
+    # "scibert-scivocab-cased": 9,  # 0.6536375053937445
+    # "scibert-basevocab-uncased": 9,  # 0.6748944832703548
+    # "scibert-basevocab-cased": 9,  # 0.6524624150542374
+    # "distilroberta-base": 5,  # 0.6797558139322964
+    # "distilbert-base-uncased": 5,  # 0.6756659152782033
+    # "distilbert-base-uncased-distilled-squad": 4,  # 0.6718318036382493
+    # "distilbert-base-multilingual-cased": 5,  # 0.6178131050889238
+    # "albert-base-v1": 10,  # 0.654237567249745
+    # "albert-large-v1": 17,  # 0.6755890754323239
+    # "albert-xlarge-v1": 16,  # 0.7031844211905911
+    # "albert-xxlarge-v1": 8,  # 0.7508642218461096
+    # "albert-base-v2": 9,  # 0.6682455591837927
+    # "albert-large-v2": 14,  # 0.7008537594374035
+    # "albert-xlarge-v2": 13,  # 0.7317228357869254
+    # "albert-xxlarge-v2": 8,  # 0.7505160257184014
+    # "xlm-roberta-base": 9,  # 0.6506799445871697
+    # "xlm-roberta-large": 17,  # 0.6941551437476826
+    # "google/electra-small-generator": 9,  # 0.6659421842117754
+    # "google/electra-small-discriminator": 11,  # 0.6534639151385759
+    # "google/electra-base-generator": 10,  # 0.6730033453857188
+    # "google/electra-base-discriminator": 9,  # 0.7032089590812965
+    # "google/electra-large-generator": 18,  # 0.6813370013104459
+    # "google/electra-large-discriminator": 14,  # 0.6896675824733477
+    # "google/bert_uncased_L-2_H-128_A-2": 1,  # 0.5887998733228855
+    # "google/bert_uncased_L-2_H-256_A-4": 1,  # 0.6114863547661203
+    # "google/bert_uncased_L-2_H-512_A-8": 1,  # 0.6177345529192847
+    # "google/bert_uncased_L-2_H-768_A-12": 2,  # 0.6191261237956839
+    # "google/bert_uncased_L-4_H-128_A-2": 3,  # 0.6076202863798991
+    # "google/bert_uncased_L-4_H-256_A-4": 3,  # 0.6205239036810148
+    # "google/bert_uncased_L-4_H-512_A-8": 3,  # 0.6375351621856903
+    # "google/bert_uncased_L-4_H-768_A-12": 3,  # 0.6561849979644787
+    # "google/bert_uncased_L-6_H-128_A-2": 5,  # 0.6200458425360283
+    # "google/bert_uncased_L-6_H-256_A-4": 5,  # 0.6277501629539081
+    # "google/bert_uncased_L-6_H-512_A-8": 5,  # 0.641952305130849
+    # "google/bert_uncased_L-6_H-768_A-12": 5,  # 0.6762186226247106
+    # "google/bert_uncased_L-8_H-128_A-2": 7,  # 0.6186876506711779
+    # "google/bert_uncased_L-8_H-256_A-4": 7,  # 0.6447993208267708
+    # "google/bert_uncased_L-8_H-512_A-8": 6,  # 0.6489729408169956
+    # "google/bert_uncased_L-8_H-768_A-12": 7,  # 0.6705203359541737
+    # "google/bert_uncased_L-10_H-128_A-2": 8,  # 0.6126762064125278
+    # "google/bert_uncased_L-10_H-256_A-4": 8,  # 0.6376350032576573
+    # "google/bert_uncased_L-10_H-512_A-8": 9,  # 0.6579006292799915
+    # "google/bert_uncased_L-10_H-768_A-12": 8,  # 0.6861146692220176
+    # "google/bert_uncased_L-12_H-128_A-2": 10,  # 0.6184105693383591
+    # "google/bert_uncased_L-12_H-256_A-4": 11,  # 0.6374004994430261
+    # "google/bert_uncased_L-12_H-512_A-8": 10,  # 0.65880012149526
+    # "google/bert_uncased_L-12_H-768_A-12": 9,  # 0.675911357700092
 }
 
 
@@ -113,9 +116,9 @@ def sent_encode(tokenizer, sent):
     else:
         import transformers
         if LooseVersion(transformers.__version__) >= LooseVersion("3.0.0"):
-            return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.max_len, truncation=True)
+            return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.model_max_length, truncation=True)
         else:
-            return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.max_len)
+            return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.model_max_length)
 
 
 def get_model(model_type, num_layers, all_layers=None):
@@ -358,7 +361,7 @@ def greedy_cos_idf(ref_embedding, ref_masks, ref_idf, hyp_embedding, hyp_masks, 
 
 
 def bert_cos_score_idf(
-    model, refs, hyps, tokenizer, idf_dict, verbose=False, batch_size=64, device="cuda:0", all_layers=False
+    model, refs, hyps, tokenizer, idf_dict, verbose=False, batch_size=64, device="cuda:0", all_layers=False, no_punc=False,
 ):
     """
     Compute BERTScore.
@@ -389,7 +392,7 @@ def bert_cos_score_idf(
     for batch_start in iter_range:
         sen_batch = sentences[batch_start : batch_start + batch_size]
         embs, masks, padded_idf = get_bert_embedding(
-            sen_batch, model, tokenizer, idf_dict, device=device, all_layers=all_layers
+            sen_batch, model, tokenizer, idf_dict, device=device, all_layers=all_layers,
         )
         embs = embs.cpu()
         masks = masks.cpu()
@@ -398,6 +401,11 @@ def bert_cos_score_idf(
             sequence_len = masks[i].sum().item()
             emb = embs[i, :sequence_len]
             idf = padded_idf[i, :sequence_len]
+            if no_punc:
+                tokens = tokenizer.convert_ids_to_tokens(tokenizer(sen)['input_ids'])
+                mask = mark_all_punc_tokens(tokens)
+                emb = emb[mask]
+                idf = idf[mask]
             stats_dict[sen] = (emb, idf)
 
     def pad_batch_stats(sen_batch, stats_dict, device):
@@ -436,6 +444,18 @@ def bert_cos_score_idf(
     preds = torch.cat(preds, dim=1 if all_layers else 0)
     return preds
 
+def mark_all_punc_tokens(tokens):
+    whitespace_token='\u0120'
+    newline_token = '\u010a'
+    tab_token = '\u0109'
+
+    def all_punc(tok):
+        return all(c in (set(string.punctuation) - {'+-*/&|~'}) for c in tok)
+
+    def strip_whitespace(tok):
+        return tok.strip(whitespace_token + newline_token + tab_token)
+
+    return torch.tensor([not all_punc(strip_whitespace(tok)) for tok in tokens])
 
 def get_hash(model, num_layers, idf, rescale_with_baseline, use_custom_baseline):
     msg = "{}_L{}{}_version={}(hug_trans={})".format(

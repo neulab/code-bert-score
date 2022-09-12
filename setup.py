@@ -2,7 +2,7 @@ from io import open
 from setuptools import find_packages, setup
 
 setup(
-    name="bert_score",
+    name="code_bert_score",
     version='0.3.5',
     author="Tianyi Zhang*, Varsha Kishore*, Felix Wu*, Kilian Q. Weinberger, and Yoav Artzi",
     author_email="tzhang@asapp.com",
@@ -11,7 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     keywords='BERT NLP deep learning google metric',
     license='MIT',
-    url="https://github.com/Tiiiger/bert_score",
+    url="https://github.com/Tiiiger/code_bert_score",
     packages=find_packages(exclude=["*.tests", "*.tests.*",
                                     "tests.*", "tests"]),
     install_requires=['torch>=1.0.0',
@@ -24,8 +24,8 @@ setup(
                       ],
     entry_points={
         'console_scripts': [
-            "bert-score=bert_score_cli.score:main",
-            "bert-score-show=bert_score_cli.visualize:main",
+            "bert-score=code_bert_score_cli.score:main",
+            "bert-score-show=code_bert_score_cli.visualize:main",
         ]
     },
     include_package_data=True,

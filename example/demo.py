@@ -1,4 +1,4 @@
-from bert_score import score
+from code_bert_score import score
 
 with open("hyps.txt") as f:
     cands = [line.strip() for line in f]

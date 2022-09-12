@@ -5,8 +5,8 @@ Automatic Evaluation Metric described in the paper [BERTScore: Evaluating Text G
 #### News:
 - The option `--rescale-with-baseline` is changed to `--rescale_with_baseline` so that it is consistent with other options.
 - Updated to version 0.3.5
-  - Being compatible with Huggingface's transformers >=v3.0.0 and minor fixes ([#58](https://github.com/Tiiiger/bert_score/pull/58), [#66](https://github.com/Tiiiger/bert_score/pull/66), [#68](https://github.com/Tiiiger/bert_score/pull/68))
-  - Several improvements related to efficency ([#67](https://github.com/Tiiiger/bert_score/pull/67), [#69](https://github.com/Tiiiger/bert_score/pull/69))
+  - Being compatible with Huggingface's transformers >=v3.0.0 and minor fixes ([#58](https://github.com/Tiiiger/code_bert_score/pull/58), [#66](https://github.com/Tiiiger/code_bert_score/pull/66), [#68](https://github.com/Tiiiger/code_bert_score/pull/68))
+  - Several improvements related to efficency ([#67](https://github.com/Tiiiger/code_bert_score/pull/67), [#69](https://github.com/Tiiiger/code_bert_score/pull/69))
 - Updated to version 0.3.4
   - Compatible with transformers v2.11.0 now (#58)
 - For people in China, downloading pre-trained weights can be very slow. We provide copies of a few models on Baidu Pan.
@@ -15,7 +15,7 @@ Automatic Evaluation Metric described in the paper [BERTScore: Evaluating Text G
   - [bert-base-multilingual-cased](https://pan.baidu.com/s/100SBjkLmI7U4pgo_e0q7CQ) password: yx3q
 - [Huggingface's nlp](https://github.com/huggingface/nlp) library includes BERTScore in their metric collection.
 - Updated to version 0.3.3
-  - Fixing the bug with empty strings [issue #47](https://github.com/Tiiiger/bert_score/issues/47).
+  - Fixing the bug with empty strings [issue #47](https://github.com/Tiiiger/code_bert_score/issues/47).
   - Supporting 6 [ELECTRA](https://github.com/google-research/electra) models and 24 smaller [BERT](https://github.com/google-research/bert) models.
   - A new [Google sheet](https://docs.google.com/spreadsheets/d/1RKOVpselB98Nnh_EOC4A2BYn8_201tmPODpNWu4w7xI/edit?usp=sharing) for keeping the performance (i.e., pearson correlation with human judgment) of different models on WMT16 to-English.
   - Including the script for tuning the best number of layers of an English pre-trained model on WMT16 to-English data (See the [details](tune_layers)).
@@ -26,7 +26,7 @@ Automatic Evaluation Metric described in the paper [BERTScore: Evaluating Text G
   - A new `BERTScorer` object that caches the model to avoid re-loading it multiple times. Please see our [jupyter notebook example](./example/Demo.ipynb) for the usage.
   - Supporting multiple reference sentences for each example. The `score` function now can take a list of lists of strings as the references and return the score between the candidate sentence and its closest reference sentence.
 
-Please see [release logs](https://github.com/Tiiiger/bert_score/releases) for older updates.
+Please see [release logs](https://github.com/Tiiiger/code_bert_score/releases) for older updates.
 
 #### Authors:
 * [Tianyi Zhang](https://scholar.google.com/citations?user=OI0HSa0AAAAJ&hl=en)*
@@ -70,13 +70,13 @@ pip install bert-score
 ```
 Install latest unstable version from the master branch on Github by:
 ```
-pip install git+https://github.com/Tiiiger/bert_score
+pip install git+https://github.com/Tiiiger/code_bert_score
 ```
 
 Install it from the source by:
 ```sh
-git clone https://github.com/Tiiiger/bert_score
-cd bert_score
+git clone https://github.com/Tiiiger/code_bert_score
+cd code_bert_score
 pip install .
 ```
 and you may test your installation by:
@@ -89,10 +89,10 @@ python -m unittest discover
 
 #### Python Function
 
-On a high level, we provide a python function `bert_score.score` and a python object `bert_score.BERTScorer`.
+On a high level, we provide a python function `code_bert_score.score` and a python object `code_bert_score.BERTScorer`.
 The function provides all the supported features while the scorer object caches the BERT model to faciliate multiple evaluations.
 Check our [demo](./example/Demo.ipynb) to see how to use these two interfaces. 
-Please refer to [`bert_score/score.py`](./bert_score/score.py) for implementation details.
+Please refer to [`code_bert_score/score.py`](./code_bert_score/score.py) for implementation details.
 
 Running BERTScore can be computationally intensive (because it uses BERT :p).
 Therefore, a GPU is usually necessary. If you don't have access to a GPU, you
@@ -157,7 +157,7 @@ The figure will be saved to out.png.
 
 #### Practical Tips
 
-* Report the hash code (e.g., `roberta-large_L17_no-idf_version=0.3.0(hug_trans=2.3.0)-rescaled`) in your paper so that people know what setting you use. This is inspired by [sacreBLEU](https://github.com/mjpost/sacreBLEU). Changes in huggingface's transformers version may also affect the score (See [issue #46](https://github.com/Tiiiger/bert_score/issues/46)).
+* Report the hash code (e.g., `roberta-large_L17_no-idf_version=0.3.0(hug_trans=2.3.0)-rescaled`) in your paper so that people know what setting you use. This is inspired by [sacreBLEU](https://github.com/mjpost/sacreBLEU). Changes in huggingface's transformers version may also affect the score (See [issue #46](https://github.com/Tiiiger/code_bert_score/issues/46)).
 * Unlike BERT, RoBERTa uses GPT2-style tokenizer which creates addition " " tokens when there are multiple spaces appearing together. It is recommended to remove addition spaces by `sent = re.sub(r' +', ' ', sent)` or `sent = re.sub(r'\s+', ' ', sent)`.
 * Using inverse document frequency (idf) on the reference
   sentences to weigh word importance  may correlate better with human judgment.
@@ -165,11 +165,11 @@ The figure will be saved to out.png.
   would become inaccurate/invalid.
   We now make it optional. To use idf,
   please set `--idf` when using the CLI tool or
-  `idf=True` when calling `bert_score.score` function.
+  `idf=True` when calling `code_bert_score.score` function.
 * When you are low on GPU memory, consider setting `batch_size` when calling
-  `bert_score.score` function.
+  `code_bert_score.score` function.
 * To use a particular model please set `-m MODEL_TYPE` when using the CLI tool
-  or `model_type=MODEL_TYPE` when calling `bert_score.score` function. 
+  or `model_type=MODEL_TYPE` when calling `code_bert_score.score` function. 
 * We tune layer to use based on WMT16 metric evaluation dataset. You may use a
   different layer by setting `-l LAYER` or `num_layers=LAYER`. To tune the best layer for your custom model, please follow the instructions in [tune_layers](tune_layers) folder.
 * __Limitation__: Because BERT, RoBERTa, and XLM with learned positional embeddings are pre-trained on sentences with max length 512, BERTScore is undefined between sentences longer than 510 (512 after adding \[CLS\] and \[SEP\] tokens). The sentences longer than this will be truncated. Please consider using XLNet which can support much longer inputs.

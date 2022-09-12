@@ -42,6 +42,7 @@ def score(
     return_hash=False,
     rescale_with_baseline=False,
     baseline_path=None,
+    no_punc=False
 ):
     """
     BERTScore metric.
@@ -66,6 +67,7 @@ def score(
         - :param: `return_hash` (bool): return hash code of the setting
         - :param: `rescale_with_baseline` (bool): rescale bertscore with pre-computed baseline
         - :param: `baseline_path` (str): customized baseline file
+        - :param: `no_punc` (bool): Uri: exclude punctuation-only tokens in candidate and reference
 
     Return:
         - :param: `(P, R, F)`: each is of shape (N); N = number of input
@@ -139,6 +141,7 @@ def score(
         device=device,
         batch_size=batch_size,
         all_layers=all_layers,
+        no_punc=no_punc
     ).cpu()
 
     if ref_group_boundaries is not None:
