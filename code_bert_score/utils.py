@@ -450,7 +450,7 @@ def mark_all_punc_tokens(tokens):
     tab_token = '\u0109'
 
     def all_punc(tok):
-        return all(c in (set(string.punctuation) - {'+-*/&|~'}) for c in tok)
+        return all(c in (set(string.punctuation) - set('+-*/&|~')) for c in tok)
 
     def strip_whitespace(tok):
         return tok.strip(whitespace_token + newline_token + tab_token)
