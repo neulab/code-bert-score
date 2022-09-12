@@ -289,6 +289,9 @@ def main():
             use_auth_token=True if model_args.use_auth_token else None,
             streaming=False
         )
+        if data_args.max_train_samples is not None:
+            max_train_samples = min(len(raw_datasets['train']), data_args.max_train_samples)
+            raw_datasets['train'] = raw_datasets['train'].select(range(max_train_samples))
         # if "validation" not in raw_datasets.keys():
         #     raw_datasets["validation"] = load_dataset(
         #         data_args.dataset_name,
