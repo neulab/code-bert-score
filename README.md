@@ -1,43 +1,11 @@
-# BERTScore
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-red.svg)](#python) [![PyPI version bert-score](https://badge.fury.io/py/bert-score.svg)](https://pypi.python.org/pypi/bert-score/) [![Downloads](https://pepy.tech/badge/bert-score)](https://pepy.tech/project/bert-score) [![Downloads](https://pepy.tech/badge/bert-score/month)](https://pepy.tech/project/bert-score/month) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) 
+# CodeBERTScore
+<!-- [![made-with-python](https://img.shields.io/badge/Made%20with-Python-red.svg)](#python) [![PyPI version bert-score](https://badge.fury.io/py/bert-score.svg)](https://pypi.python.org/pypi/bert-score/) [![Downloads](https://pepy.tech/badge/bert-score)](https://pepy.tech/project/bert-score) [![Downloads](https://pepy.tech/badge/bert-score/month)](https://pepy.tech/project/bert-score/month) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)  -->
 
-Automatic Evaluation Metric described in the paper [BERTScore: Evaluating Text Generation with BERT](https://arxiv.org/abs/1904.09675) (ICLR 2020).
-#### News:
-- The option `--rescale-with-baseline` is changed to `--rescale_with_baseline` so that it is consistent with other options.
-- Updated to version 0.3.5
-  - Being compatible with Huggingface's transformers >=v3.0.0 and minor fixes ([#58](https://github.com/Tiiiger/code_bert_score/pull/58), [#66](https://github.com/Tiiiger/code_bert_score/pull/66), [#68](https://github.com/Tiiiger/code_bert_score/pull/68))
-  - Several improvements related to efficency ([#67](https://github.com/Tiiiger/code_bert_score/pull/67), [#69](https://github.com/Tiiiger/code_bert_score/pull/69))
-- Updated to version 0.3.4
-  - Compatible with transformers v2.11.0 now (#58)
-- For people in China, downloading pre-trained weights can be very slow. We provide copies of a few models on Baidu Pan.
-  - [roberta-large](https://pan.baidu.com/s/1MTmGHsZ3ubn7Vr_W-wyEdQ) password: dhe5
-  - [bert-base-chinese](https://pan.baidu.com/s/1THfiCXjWtdGGsCMskQ5svA) password: jvk7
-  - [bert-base-multilingual-cased](https://pan.baidu.com/s/100SBjkLmI7U4pgo_e0q7CQ) password: yx3q
-- [Huggingface's nlp](https://github.com/huggingface/nlp) library includes BERTScore in their metric collection.
-- Updated to version 0.3.3
-  - Fixing the bug with empty strings [issue #47](https://github.com/Tiiiger/code_bert_score/issues/47).
-  - Supporting 6 [ELECTRA](https://github.com/google-research/electra) models and 24 smaller [BERT](https://github.com/google-research/bert) models.
-  - A new [Google sheet](https://docs.google.com/spreadsheets/d/1RKOVpselB98Nnh_EOC4A2BYn8_201tmPODpNWu4w7xI/edit?usp=sharing) for keeping the performance (i.e., pearson correlation with human judgment) of different models on WMT16 to-English.
-  - Including the script for tuning the best number of layers of an English pre-trained model on WMT16 to-English data (See the [details](tune_layers)).
-- Updated to version 0.3.2
-  - **Bug fixed**: fixing the bug in v0.3.1 when having multiple reference sentences.
-  - Supporting multiple reference sentences with our command line tool.
-- Updated to version 0.3.1
-  - A new `BERTScorer` object that caches the model to avoid re-loading it multiple times. Please see our [jupyter notebook example](./example/Demo.ipynb) for the usage.
-  - Supporting multiple reference sentences for each example. The `score` function now can take a list of lists of strings as the references and return the score between the candidate sentence and its closest reference sentence.
+An Automatic Evaluation Metric for Code, based on [BERTScore](https://arxiv.org/abs/1904.09675).
 
-Please see [release logs](https://github.com/Tiiiger/code_bert_score/releases) for older updates.
+This repository is based on the code of [BERTScore](https://github.com/Tiiiger/bert_score), and we are grateful to the authors for releasing their code.
 
-#### Authors:
-* [Tianyi Zhang](https://scholar.google.com/citations?user=OI0HSa0AAAAJ&hl=en)*
-* [Varsha Kishore](https://scholar.google.com/citations?user=B8UeYcEAAAAJ&authuser=2)*
-* [Felix Wu](https://sites.google.com/view/felixwu/home)*
-* [Kilian Q. Weinberger](http://kilian.cs.cornell.edu/index.html)
-* [Yoav Artzi](https://yoavartzi.com/)
-
-*: Equal Contribution
-
-### Overview
+### Background: BERTScore
 BERTScore leverages the pre-trained contextual embeddings from BERT and matches
 words in candidate and reference sentences by cosine similarity.
 It has been shown to correlate with human judgment on sentence-level and
@@ -48,7 +16,34 @@ useful for evaluating different language generation tasks.
 For an illustration, BERTScore recall can be computed as
 ![](./bert_score.png "BERTScore")
 
-If you find this repo useful, please cite:
+## Usage
+```
+import code_bert_score
+pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='python')
+```
+Where `pred_results` is a 3-tuple of `(precision, recall, F1)`, where each is a 1-D tensor of scores for each prediction-reference pair.
+
+We found that sometimes more accurate results are achieved using the `no_punc=True` argument, that encodes the *entire* inputs, but measures the similarity only non-punctuation and non-whitespace tokens:
+
+```
+pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='python', no_punc=True)
+```
+
+
+See also our [example.py](./example.py) and the original BERTScore [demo notebook](./example/Demo.ipynb).
+
+## Backend Model
+Currently, all languages use the `microsoft/codebert-base-mlm` model.
+We are in the process of releasing fine-tuned models for a variety of programming languages such as Python, Java, JavaScript, C, and C++.
+
+## Training
+The [`run_mlm.py`](./run_mlm.py) script can be used to fine-tune the base model `microsoft/codebert-base-mlm` on specific languages.
+
+## Human Evaluation
+
+We are in the process of performing a human evaluation that measures the correlation between CodeBERTScore and human judgement.
+
+<!-- If you find this repo useful, please cite:
 ```
 @inproceedings{bert-score,
   title={BERTScore: Evaluating Text Generation with BERT},
@@ -57,9 +52,9 @@ If you find this repo useful, please cite:
   year={2020},
   url={https://openreview.net/forum?id=SkeHuCVFDr}
 }
-```
+``` -->
 
-### Installation
+<!-- ### Installation
 * Python version >= 3.6
 * PyTorch version >= 1.0.0
 
@@ -84,10 +79,10 @@ and you may test your installation by:
 python -m unittest discover
 ```
 
-### Usage
+### Usage -->
 
 
-#### Python Function
+<!-- #### Python Function
 
 On a high level, we provide a python function `code_bert_score.score` and a python object `code_bert_score.BERTScorer`.
 The function provides all the supported features while the scorer object caches the BERT model to faciliate multiple evaluations.
@@ -189,4 +184,4 @@ Please see this [Google sheet](https://docs.google.com/spreadsheets/d/1RKOVpselB
 
 ### Acknowledgement
 This repo wouldn't be possible without the awesome
-[bert](https://github.com/google-research/bert), [fairseq](https://github.com/pytorch/fairseq), and [transformers](https://github.com/huggingface/transformers).
+[bert](https://github.com/google-research/bert), [fairseq](https://github.com/pytorch/fairseq), and [transformers](https://github.com/huggingface/transformers). -->
