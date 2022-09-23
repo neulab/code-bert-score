@@ -42,3 +42,6 @@ eval(predictions, decompiled, refs)
 
 print('Remove punctiation-only tokens after encoding:')
 eval(predictions, decompiled, refs, no_punc=True)
+
+print('Test long inputs (the model will chunk the inputs with overlap, and concatenate the outputs):')
+eval([' '.join(predictions) * 5], [' '.join(decompiled) * 5], [' '.join(refs) * 5])

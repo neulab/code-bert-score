@@ -110,13 +110,17 @@ def sent_encode(tokenizer, sent):
         # for RoBERTa and GPT-2
         import transformers
         if LooseVersion(transformers.__version__) >= LooseVersion("3.0.0"):
-            return tokenizer.encode(sent, add_special_tokens=True, add_prefix_space=True, max_length=tokenizer.max_len, truncation=True)
+            # Uri: truncation=False
+            # return tokenizer.encode(sent, add_special_tokens=True, add_prefix_space=True, max_length=tokenizer.max_len, truncation=True)
+            return tokenizer.encode(sent, add_special_tokens=True, add_prefix_space=True, max_length=tokenizer.max_len, truncation='do_not_truncate')
         else:
             return tokenizer.encode(sent, add_special_tokens=True, add_prefix_space=True, max_length=tokenizer.max_len)
     else:
         import transformers
         if LooseVersion(transformers.__version__) >= LooseVersion("3.0.0"):
-            return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.model_max_length, truncation=True)
+            # return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.model_max_length, truncation=True)
+            # Uri: truncation=False
+            return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.model_max_length, truncation='do_not_truncate')
         else:
             return tokenizer.encode(sent, add_special_tokens=True, max_length=tokenizer.model_max_length)
 
@@ -182,16 +186,62 @@ def padding(arr, pad_token, dtype=torch.long):
     return padded, lens, mask
 
 
-def bert_encode(model, x, attention_mask, all_layers=False):
+def bert_encode(model, x, attention_mask, tokenizer, all_layers=False, chunk_overlap=0.5):
     model.eval()
     with torch.no_grad():
-        out = model(x, attention_mask=attention_mask)
-    if all_layers:
-        emb = torch.stack(out[-1], dim=2)
-    else:
-        emb = out[0]
+        model_max_length = tokenizer.max_len if isinstance(tokenizer, GPT2Tokenizer) else tokenizer.model_max_length
+        window_indices = get_window_indices(total_seq_length=x.shape[-1], encoder_max_length=model_max_length, chunk_overlap=chunk_overlap)
+
+        chunk_output = []
+        for context_start_ind, context_end_ind, update_start_ind, update_end_ind in window_indices:
+            chunk = x[:, context_start_ind:context_end_ind]
+            chunk_attention_mask = attention_mask[:, context_start_ind:context_end_ind]
+            out = model(chunk, attention_mask=chunk_attention_mask)
+            
+            if all_layers:
+                emb = torch.stack(out[-1], dim=2)
+            else:
+                emb = out[0]
+            emb = emb[:, update_start_ind:update_end_ind]
+            chunk_output.append(emb)
+
+    emb = torch.cat(chunk_output, dim=1)            
+
     return emb
 
+def get_window_indices(total_seq_length, encoder_max_length, chunk_overlap):
+    # Copied from SLED (Ivgy et al., 2022)
+    # https://github.com/Mivg/SLED/blob/main/sled/modeling_sled.py#L467
+    if total_seq_length <= encoder_max_length:
+        return [(0, total_seq_length, 0, total_seq_length)]
+    else:
+        window_margin = int(encoder_max_length * chunk_overlap / 2)
+        results = []
+        stride = encoder_max_length - 2 * window_margin
+        # if self.chunk_overlap == 0:
+        #     stride = self.model_encoder_max_len
+        context_start = update_start_ind = 0
+        context_end = encoder_max_length
+        update_end_ind = context_end - window_margin
+        # first window always should update from the beginning
+        results.append((context_start, context_end, update_start_ind, update_end_ind))  
+
+        while context_end < total_seq_length:
+            context_end = min(total_seq_length, context_end + stride)
+            context_start = (
+                context_start + stride if context_end < total_seq_length else total_seq_length - encoder_max_length
+            )
+            update_start_ind = max(update_start_ind + stride, update_end_ind)
+            # last window always should update until the end
+            update_end_ind = (
+                min(total_seq_length, update_end_ind + stride) if context_end < total_seq_length else total_seq_length
+            )
+
+            cs, ce, us, ue = context_start, context_end, update_start_ind - context_start, \
+                                update_end_ind - context_start
+
+            results.append((cs, ce, us, ue))
+        return results
 
 def process(a, tokenizer=None):
     if tokenizer is not None:
@@ -253,7 +303,7 @@ def collate_idf(arr, tokenizer, idf_dict, device="cuda:0"):
     return padded, padded_idf, lens, mask
 
 
-def get_bert_embedding(all_sens, model, tokenizer, idf_dict, batch_size=-1, device="cuda:0", all_layers=False):
+def get_bert_embedding(all_sens, model, tokenizer, idf_dict, batch_size=-1, device="cuda:0", all_layers=False, chunk_overlap=0.5):
     """
     Compute BERT embedding in batches.
 
@@ -275,7 +325,9 @@ def get_bert_embedding(all_sens, model, tokenizer, idf_dict, batch_size=-1, devi
     with torch.no_grad():
         for i in range(0, len(all_sens), batch_size):
             batch_embedding = bert_encode(
-                model, padded_sens[i : i + batch_size], attention_mask=mask[i : i + batch_size], all_layers=all_layers
+                model, padded_sens[i : i + batch_size], attention_mask=mask[i : i + batch_size], all_layers=all_layers,
+                tokenizer=tokenizer,
+                chunk_overlap=chunk_overlap,
             )
             embeddings.append(batch_embedding)
             del batch_embedding
@@ -361,7 +413,8 @@ def greedy_cos_idf(ref_embedding, ref_masks, ref_idf, hyp_embedding, hyp_masks, 
 
 
 def bert_cos_score_idf(
-    model, refs, hyps, tokenizer, idf_dict, verbose=False, batch_size=64, device="cuda:0", all_layers=False, no_punc=False,
+    model, refs, hyps, tokenizer, idf_dict, verbose=False, batch_size=64, device="cuda:0", all_layers=False, 
+    no_punc=False, chunk_overlap=0.5
 ):
     """
     Compute BERTScore.
@@ -393,6 +446,7 @@ def bert_cos_score_idf(
         sen_batch = sentences[batch_start : batch_start + batch_size]
         embs, masks, padded_idf = get_bert_embedding(
             sen_batch, model, tokenizer, idf_dict, device=device, all_layers=all_layers,
+            chunk_overlap=chunk_overlap
         )
         embs = embs.cpu()
         masks = masks.cpu()

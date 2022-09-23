@@ -42,7 +42,8 @@ def score(
     return_hash=False,
     rescale_with_baseline=False,
     baseline_path=None,
-    no_punc=False
+    no_punc=False,
+    chunk_overlap=0.5
 ):
     """
     BERTScore metric.
@@ -68,6 +69,7 @@ def score(
         - :param: `rescale_with_baseline` (bool): rescale bertscore with pre-computed baseline
         - :param: `baseline_path` (str): customized baseline file
         - :param: `no_punc` (bool): Uri: exclude punctuation-only tokens in candidate and reference
+        - :param: `chunk_overlap` (float): Uri: how much overlap between chunks, when the input is longer than the models' max length
 
     Return:
         - :param: `(P, R, F)`: each is of shape (N); N = number of input
@@ -141,7 +143,8 @@ def score(
         device=device,
         batch_size=batch_size,
         all_layers=all_layers,
-        no_punc=no_punc
+        no_punc=no_punc,
+        chunk_overlap=chunk_overlap
     ).cpu()
 
     if ref_group_boundaries is not None:

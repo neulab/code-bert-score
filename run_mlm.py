@@ -199,6 +199,12 @@ class DataTrainingArguments:
             )
         },
     )
+    push_name: Optional[str] = field(
+        default=None, metadata={"help": "The name in the hub"}
+    )
+    push_organization: Optional[str] = field(
+        default=None, metadata={"help": "The organization in the hub"}
+    )
 
     def __post_init__(self):
         if self.dataset_name is None and self.train_file is None and self.validation_file is None:
@@ -609,7 +615,8 @@ def main():
             kwargs["dataset"] = data_args.dataset_name
 
     if training_args.push_to_hub:
-        trainer.push_to_hub(**kwargs)
+        logger.info(f"Pushing model to the hub: {data_args.push_organization}/{data_args.push_name}, {kwargs}")
+        trainer.push_to_hub(data_args.push_name, organization=data_args.push_organization, **kwargs)
     else:
         trainer.create_model_card(**kwargs)
 
