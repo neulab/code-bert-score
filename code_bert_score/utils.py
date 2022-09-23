@@ -28,12 +28,13 @@ SCIBERT_URL_DICT = {
 
 
 lang2model = defaultdict(lambda: "microsoft/codebert-base-mlm")
-lang2model.update(
-    # {"c": "codebert_c_100k_base"}
-)
+lang2model.update({
+        "python": "neulab/codebert-python",
+        "javascript": "neulab/codebert-javascript",
+})
 
-
-model2layers = {
+model2layers = defaultdict(lambda: 10)
+model2layers.update({
     "microsoft/codebert-base-mlm": 10,
     # "codebert_c_100k_base": 10,
     # "bert-base-uncased": 9,  # 0.6925188074454226
@@ -98,7 +99,7 @@ model2layers = {
     # "google/bert_uncased_L-12_H-256_A-4": 11,  # 0.6374004994430261
     # "google/bert_uncased_L-12_H-512_A-8": 10,  # 0.65880012149526
     # "google/bert_uncased_L-12_H-768_A-12": 9,  # 0.675911357700092
-}
+})
 
 
 def sent_encode(tokenizer, sent):

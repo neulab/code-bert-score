@@ -33,8 +33,15 @@ pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='python'
 See also our [example.py](./example.py) and the original BERTScore [demo notebook](./example/Demo.ipynb).
 
 ## Backend Model
-Currently, all languages use the `microsoft/codebert-base-mlm` model.
-We are in the process of releasing fine-tuned models for a variety of programming languages such as Python, Java, JavaScript, C, and C++.
+We fine-tuned the `microsoft/codebert-base-mlm` model for 1,000,000 steps (with `batch_size=32`) on several languages separately.
+
+We released the following models to the Huggingface hub:
+* `neulab/codebert-python` (the default model for `lang='python'`)
+* `neulab/codebert-javascript` (the default model for `lang='javascript'`)
+
+all other languages currently use the `microsoft/codebert-base-mlm` model.
+
+We are in the process of releasing additional fine-tuned models for Java, C, and C++.
 
 ## Training
 The [`run_mlm.py`](./run_mlm.py) script can be used to fine-tune the base model `microsoft/codebert-base-mlm` on specific languages.
