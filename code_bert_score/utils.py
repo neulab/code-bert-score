@@ -31,6 +31,7 @@ lang2model = defaultdict(lambda: "microsoft/codebert-base-mlm")
 lang2model.update({
         "python": "neulab/codebert-python",
         "javascript": "neulab/codebert-javascript",
+        "c": "neulab/codebert-c",
 })
 
 model2layers = defaultdict(lambda: 10)
