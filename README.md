@@ -37,12 +37,12 @@ We fine-tuned the `microsoft/codebert-base-mlm` model for 1,000,000 steps (with 
 
 We released the following models to the Huggingface hub:
 * `neulab/codebert-python` (the default model for `lang='python'`)
-* `neulab/codebert-javascript` (the default model for `lang='javascript'`)
+* `neulab/codebert-javascript` (the default model for `lang='javascript'` or `'js'`)
 * `neulab/codebert-c` (the default model for `lang='c'`)
+* `neulab/codebert-cpp` (the default model for `lang='cpp'` or `'c++'`)
+* `neulab/codebert-java` (the default model for `lang='java'`)
 
 all other languages currently use the `microsoft/codebert-base-mlm` model.
-
-We are in the process of releasing additional fine-tuned models for Java and C++.
 
 ## Training
 The [`run_mlm.py`](./run_mlm.py) script can be used to fine-tune the base model `microsoft/codebert-base-mlm` on specific languages.
