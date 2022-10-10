@@ -45,3 +45,6 @@ eval(predictions, decompiled, refs, no_punc=True)
 
 print('Test long inputs (the model will chunk the inputs with overlap, and concatenate the outputs):')
 eval([' '.join(predictions) * 5], [' '.join(decompiled) * 5], [' '.join(refs) * 5])
+
+print('Test with sources:')
+eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'])

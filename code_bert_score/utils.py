@@ -420,7 +420,7 @@ def greedy_cos_idf(ref_embedding, ref_masks, ref_idf, hyp_embedding, hyp_masks, 
 
 def bert_cos_score_idf(
     model, refs, hyps, tokenizer, idf_dict, verbose=False, batch_size=64, device="cuda:0", all_layers=False, 
-    no_punc=False, chunk_overlap=0.5
+    no_punc=False, sources=None, chunk_overlap=0.5
 ):
     """
     Compute BERTScore.
@@ -438,8 +438,22 @@ def bert_cos_score_idf(
     """
     preds = []
 
-    def dedup_and_sort(l):
-        return sorted(list(set(l)), key=lambda x: len(x.split(" ")), reverse=True)
+    if sources is None:
+        def dedup_and_sort(l):
+            return sorted(list(set(l)), key=lambda x: len(x.split(" ")), reverse=True)
+    else:
+        assert len(hyps) == len(sources)
+        assert len(refs) == len(sources)
+        sources = [f'{s} \n' for s in sources]
+        hyps = [f'{s}{h}' for s,h in zip(sources, hyps)]
+        refs = [f'{s}{r}' for s,r in zip(sources, refs)]
+
+        # we need to do this because later we do:
+        # sentences = dedup_and_sort(refs + hyps)
+        sources_to_trim = sources * 2
+        
+        # don't dedup and don't sort, so we will be able to mask the sources later
+        dedup_and_sort = lambda l: l
 
     sentences = dedup_and_sort(refs + hyps)
     embs = []
@@ -466,6 +480,19 @@ def bert_cos_score_idf(
                 mask = mark_all_punc_tokens(tokens)
                 emb = emb[mask]
                 idf = idf[mask]
+            if sources is not None:
+                sources_batch = sources_to_trim[batch_start : batch_start + batch_size]
+                src = sources_batch[i]
+                tokens = tokenizer.convert_ids_to_tokens(tokenizer(sen)['input_ids'])
+                source_length = 0
+                for j in range(len(tokens)):
+                    if src.startswith(tokenizer.decode(tokenizer.convert_tokens_to_ids(tokens[:j])).removeprefix(tokenizer.bos_token)):
+                        source_length = j
+                    else:
+                        break
+                emb = emb[source_length:]
+                idf = idf[source_length:]
+
             stats_dict[sen] = (emb, idf)
 
     def pad_batch_stats(sen_batch, stats_dict, device):

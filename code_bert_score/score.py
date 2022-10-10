@@ -43,6 +43,7 @@ def score(
     rescale_with_baseline=False,
     baseline_path=None,
     no_punc=False,
+    sources=None,
     chunk_overlap=0.5
 ):
     """
@@ -69,6 +70,8 @@ def score(
         - :param: `rescale_with_baseline` (bool): rescale bertscore with pre-computed baseline
         - :param: `baseline_path` (str): customized baseline file
         - :param: `no_punc` (bool): Uri: exclude punctuation-only tokens in candidate and reference
+        - :param: `sources` (list of str): Uri: a list of a source for each candidate, to be concatenated with the candidates
+                   but removed from the similarity computation
         - :param: `chunk_overlap` (float): Uri: how much overlap between chunks, when the input is longer than the models' max length
 
     Return:
@@ -144,6 +147,7 @@ def score(
         batch_size=batch_size,
         all_layers=all_layers,
         no_punc=no_punc,
+        sources=sources,
         chunk_overlap=chunk_overlap
     ).cpu()
 
