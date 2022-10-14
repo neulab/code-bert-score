@@ -475,15 +475,10 @@ def bert_cos_score_idf(
             sequence_len = masks[i].sum().item()
             emb = embs[i, :sequence_len]
             idf = padded_idf[i, :sequence_len]
-            if no_punc:
-                tokens = tokenizer.convert_ids_to_tokens(tokenizer(sen)['input_ids'])
-                mask = mark_all_punc_tokens(tokens)
-                emb = emb[mask]
-                idf = idf[mask]
+            tokens = tokenizer.convert_ids_to_tokens(tokenizer(sen)['input_ids'])
             if sources is not None:
                 sources_batch = sources_to_trim[batch_start : batch_start + batch_size]
                 src = sources_batch[i]
-                tokens = tokenizer.convert_ids_to_tokens(tokenizer(sen)['input_ids'])
                 source_length = 0
                 for j in range(len(tokens)):
                     if src.startswith(tokenizer.decode(tokenizer.convert_tokens_to_ids(tokens[:j])).removeprefix(tokenizer.bos_token)):
@@ -492,6 +487,11 @@ def bert_cos_score_idf(
                         break
                 emb = emb[source_length:]
                 idf = idf[source_length:]
+                tokens = tokens[source_length:]
+            if no_punc:
+                mask = mark_all_punc_tokens(tokens)
+                emb = emb[mask]
+                idf = idf[mask]
 
             stats_dict[sen] = (emb, idf)
 
