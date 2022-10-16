@@ -485,9 +485,11 @@ def bert_cos_score_idf(
                         source_length = j
                     else:
                         break
-                emb = emb[source_length:]
-                idf = idf[source_length:]
-                tokens = tokens[source_length:]
+                # The input is of the format: "<bos> <source> <code>"
+                # So we the <bos> token and the code, removing the source
+                emb = torch.cat([emb[0].unsqueeze(0), emb[source_length:]], axis=0)
+                idf = torch.cat([idf[0].unsqueeze(0), idf[source_length:]], axis=0)
+                tokens = tokens[0:1] + tokens[source_length:]
             if no_punc:
                 mask = mark_all_punc_tokens(tokens)
                 emb = emb[mask]

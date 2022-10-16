@@ -24,6 +24,7 @@ decompiled = [
     'long long a_decrypt ( long long a1 , long long a2 , long long a3 , long long a4 , long long a5 , long long a6 , long long a7 , long long a8 , long long a9 , long long a10 , long long a11 , long long a12 ) { return decrypt_with_mechanism ( a1 , a2 , a3 , a12 ) ; }'
 ]
 
+
 def eval(predictions, decompiled, refs, **kwargs):
     # print('Predictions:')
     pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='c', **kwargs)
@@ -37,17 +38,28 @@ def eval(predictions, decompiled, refs, **kwargs):
         print(f'Decompiled precision: {decompiled_results[0][i]}, recall: {decompiled_results[1][i]}, f1: {decompiled_results[2][i]}')
         print()
 
-# print('Default evaluation:')
-# eval(predictions, decompiled, refs)
+print('Default evaluation:')
+eval(predictions, decompiled, refs)
 
-# print('Remove punctiation-only tokens after encoding:')
-# eval(predictions, decompiled, refs, no_punc=True)
+print('Remove punctiation-only tokens after encoding:')
+eval(predictions, decompiled, refs, no_punc=True)
 
-# print('Test long inputs (the model will chunk the inputs with overlap, and concatenate the outputs):')
-# eval([' '.join(predictions) * 5], [' '.join(decompiled) * 5], [' '.join(refs) * 5])
+print('Test long inputs (the model will chunk the inputs with overlap, and concatenate the outputs):')
+eval([' '.join(predictions) * 5], [' '.join(decompiled) * 5], [' '.join(refs) * 5])
 
 print('Test with sources:')
 eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'])
 
 print('Test with sources and no_punc:')
 eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'], no_punc=True)
+
+refs = [
+    'my_list = []', 
+    'my_list = []']
+predictions = [
+    'T = [1,2,3]', 
+    'i = []']
+
+print(code_bert_score.score(cands=predictions, refs=refs, lang='python', sources=['# declare an array', '# declare an array']))
+print(code_bert_score.score(cands=predictions, refs=refs, lang='python', no_punc=True))
+print(code_bert_score.score(cands=predictions, refs=refs, lang='python', no_punc=True, sources=['# declare an array', '# declare an array']))
