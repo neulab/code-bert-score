@@ -599,3 +599,4 @@ def cache_scibert(model_type, cache_folder="~/.cache/torch/transformers"):
                 print('{"do_lower_case": true, "max_len": 512, "init_inputs": []}', file=f)
 
     return filename
+

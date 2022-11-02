@@ -1,4 +1,5 @@
 import code_bert_score
+import pickle
 
 print('Sanity check:')
 precision, recall, f1 = code_bert_score.score(cands=['void main() {'], refs=['void main() {'], lang='c')
@@ -23,6 +24,7 @@ decompiled = [
     'long long strncmp ( _BYTE * a1 , _BYTE * a2 , long long a3 ) { signed long long v4 ; _BYTE * v5 ; _BYTE * v6 ; v6 = a1 ; v5 = a2 ; v4 = a3 - 1 ; if ( ! a3 ) return 0LL ; while ( * v6 && * v5 && v4 && * v6 == * v5 ) { ++ v6 ; ++ v5 ; -- v4 ; } return ( unsigned char ) * v6 - ( unsigned int ) ( unsigned char ) * v5 ; }',
     'long long a_decrypt ( long long a1 , long long a2 , long long a3 , long long a4 , long long a5 , long long a6 , long long a7 , long long a8 , long long a9 , long long a10 , long long a11 , long long a12 ) { return decrypt_with_mechanism ( a1 , a2 , a3 , a12 ) ; }'
 ]
+
 
 
 def eval(predictions, decompiled, refs, **kwargs):
@@ -53,13 +55,6 @@ eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare t
 print('Test with sources and no_punc:')
 eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'], no_punc=True)
 
-refs = [
-    'my_list = []', 
-    'my_list = []']
-predictions = [
-    'T = [1,2,3]', 
-    'i = []']
-
-print(code_bert_score.score(cands=predictions, refs=refs, lang='python', sources=['# declare an array', '# declare an array']))
-print(code_bert_score.score(cands=predictions, refs=refs, lang='python', no_punc=True))
-print(code_bert_score.score(cands=predictions, refs=refs, lang='python', no_punc=True, sources=['# declare an array', '# declare an array']))
+with open('java_idf.pkl', 'rb') as f:
+    java_idf = pickle.load(f)
+eval(predictions, decompiled, refs, no_punc=True, sources=['// Init fa actions', '// compare two strings', '// Decrypt'], idf=java_idf)
