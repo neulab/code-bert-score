@@ -171,7 +171,7 @@ def score(
         else:
             print(f"Warning: Baseline not Found for {model_type} on {lang} at {baseline_path}", file=sys.stderr)
 
-    out = all_preds[..., 0], all_preds[..., 1], all_preds[..., 2]  # P, R, F
+    out = all_preds[..., 0], all_preds[..., 1], all_preds[..., 2], all_preds[..., 3]  # P, R, F, F3
 
     if verbose:
         time_diff = time.perf_counter() - start

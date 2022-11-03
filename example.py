@@ -2,8 +2,8 @@ import code_bert_score
 import pickle
 
 print('Sanity check:')
-precision, recall, f1 = code_bert_score.score(cands=['void main() {'], refs=['void main() {'], lang='c')
-print(f'P: {precision} R: {recall} F1: {f1}')
+precision, recall, f1, f3 = code_bert_score.score(cands=['void main() {'], refs=['void main() {'], lang='c')
+print(f'P: {precision} R: {recall} F1: {f1}, F3: {f3}')
 
 
 print('Examples from Luke:')
@@ -36,8 +36,8 @@ def eval(predictions, decompiled, refs, **kwargs):
 
     for i in range(len(refs)):
         print(f'Example {i}:')
-        print(f'Prediction precision: {pred_results[0][i]}, recall: {pred_results[1][i]}, f1: {pred_results[2][i]}')
-        print(f'Decompiled precision: {decompiled_results[0][i]}, recall: {decompiled_results[1][i]}, f1: {decompiled_results[2][i]}')
+        print(f'Prediction precision: {pred_results[0][i]}, recall: {pred_results[1][i]}, f1: {pred_results[2][i]}, f3: {pred_results[3][i]}')
+        print(f'Decompiled precision: {decompiled_results[0][i]}, recall: {decompiled_results[1][i]}, f1: {decompiled_results[2][i]}, f3: {decompiled_results[3][i]}')
         print()
 
 print('Default evaluation:')
