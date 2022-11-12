@@ -3,8 +3,6 @@ import sys
 import time
 import pathlib
 import torch
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import pandas as pd
 import warnings
@@ -268,6 +266,9 @@ class BERTScorer:
 
         if self.rescale_with_baseline:
             sim = (sim - self.baseline_vals[2].item()) / (1 - self.baseline_vals[2].item())
+
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
 
         fig, ax = plt.subplots(figsize=(len(r_tokens), len(h_tokens)))
         im = ax.imshow(sim, cmap="Blues", vmin=0, vmax=1)

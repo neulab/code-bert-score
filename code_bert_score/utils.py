@@ -12,6 +12,8 @@ from distutils.version import LooseVersion
 
 from transformers import BertConfig, XLNetConfig, XLMConfig, RobertaConfig
 from transformers import AutoModel, GPT2Tokenizer
+from transformers import logging
+logging.set_verbosity_error()
 
 from . import __version__
 from transformers import __version__ as trans_version
