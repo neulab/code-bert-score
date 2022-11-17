@@ -3,8 +3,6 @@ import sys
 import time
 import pathlib
 import torch
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 import pandas as pd
 
@@ -30,6 +28,7 @@ __all__ = ["score", "plot_example"]
 def score(
     cands,
     refs,
+    lang=None,
     model_type=None,
     num_layers=None,
     verbose=False,
@@ -38,7 +37,6 @@ def score(
     batch_size=64,
     nthreads=4,
     all_layers=False,
-    lang=None,
     return_hash=False,
     rescale_with_baseline=False,
     baseline_path=None,
@@ -52,6 +50,9 @@ def score(
     Args:
         - :param: `cands` (list of str): candidate sentences
         - :param: `refs` (list of str or list of list of str): reference sentences
+        - :param: `lang` (str): language of the sentences; has to specify
+                  at least one of `model_type` or `lang`. `lang` needs to be
+                  specified when `rescale_with_baseline` is True.
         - :param: `model_type` (str): bert specification, default using the suggested
                   model for the target langauge; has to specify at least one of
                   `model_type` or `lang`
@@ -63,9 +64,6 @@ def score(
                   If this argument is None, the model lives on cuda:0 if cuda is available.
         - :param: `nthreads` (int): number of threads
         - :param: `batch_size` (int): bert score processing batch size
-        - :param: `lang` (str): language of the sentences; has to specify
-                  at least one of `model_type` or `lang`. `lang` needs to be
-                  specified when `rescale_with_baseline` is True.
         - :param: `return_hash` (bool): return hash code of the setting
         - :param: `rescale_with_baseline` (bool): rescale bertscore with pre-computed baseline
         - :param: `baseline_path` (str): customized baseline file
@@ -258,6 +256,8 @@ def plot_example(
         else:
             print(f"Warning: Baseline not Found for {model_type} on {lang} at {baseline_path}", file=sys.stderr)
 
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
     fig, ax = plt.subplots(figsize=(len(r_tokens), len(h_tokens)))
     im = ax.imshow(sim, cmap="Blues", vmin=0, vmax=1)
 
