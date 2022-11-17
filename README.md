@@ -21,14 +21,25 @@ For an illustration, BERTScore recall can be computed as
 import code_bert_score
 pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='python')
 ```
-Where `pred_results` is a 3-tuple of `(precision, recall, F1)`, where each is a 1-D tensor of scores for each prediction-reference pair.
+Where `pred_results` is a 4-tuple of `(precision, recall, F1, F3)`, where each is a 1-D tensor of scores for each prediction-reference pair. `F3` is similar to the well-known `F1` score, that considers recall 3 times as important as precision. See the [definition on Wikipedia](https://en.wikipedia.org/wiki/F-score#F%CE%B2_score).
 
-We found that sometimes more accurate results are achieved using the `no_punc=True` argument, that encodes the *entire* inputs, but measures the similarity only non-punctuation and non-whitespace tokens:
+## Additional Features
+
+* We found that sometimes more accurate results are achieved using the `no_punc=True` argument, that encodes the *entire* inputs, but measures the similarity only non-punctuation and non-whitespace tokens:
 
 ```
 pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='python', no_punc=True)
 ```
 
+* We found that in NL->Code problems, more accurate results are achieved by encoding the NL source with the code prediction, but then measuring similarity only for the encoded code:
+
+```
+pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='python', sources=sources)
+```
+
+* We also found that using Inverse Document Frequencies improve the results, similarly to the original BERTScore. We included an example script that shows how to precompute them here [compute_idf.py](https://github.com/neulab/code-bert-score/blob/main/compute_idf.py). Then, the resulting dictionary can be used with the argument `idf=idf_dict`.
+
+* Tuning the layer that the similarity is computed from is also helpful, using `num_layers=N` where `N` is between 5-9.
 
 See also our [example.py](./example.py) and the original BERTScore [demo notebook](./example/Demo.ipynb).
 
