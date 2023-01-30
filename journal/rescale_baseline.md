@@ -55,4 +55,4 @@ bert-score -r example/refs.txt -c example/hyps.txt \
 
 Hope you enjoy this new feature!
 
----Tianyi, Varsha, and Felix
+---Tianyi, Varsha, and Felix (The authors of the original BERTScore)

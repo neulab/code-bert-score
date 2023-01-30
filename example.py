@@ -6,7 +6,7 @@ precision, recall, f1, f3 = code_bert_score.score(cands=['void main() {'], refs=
 print(f'P: {precision} R: {recall} F1: {f1}, F3: {f3}')
 
 
-print('Examples from Luke:')
+print('Examples for decompiled code:')
 
 refs = ['int posix_spawn_file_actions_init ( posix_spawn_file_actions_t * fa ) { fa -> __actions = 0 ; return 0 ; }',
     'int strncmp ( const char * _l , const char * _r , size_t n ) { const unsigned char * l = ( void * ) _l ; const unsigned char * r = ( void * ) _r ; if ( ! ( n -- ) ) return 0 ; for ( ; ( ( ( * l ) && ( * r ) ) && n ) && ( ( * l ) == ( * r ) ) ; l ++ , r ++ , n -- ) ; return ( * l ) - ( * r ) ; }',

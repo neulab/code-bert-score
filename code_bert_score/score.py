@@ -67,10 +67,10 @@ def score(
         - :param: `return_hash` (bool): return hash code of the setting
         - :param: `rescale_with_baseline` (bool): rescale bertscore with pre-computed baseline
         - :param: `baseline_path` (str): customized baseline file
-        - :param: `no_punc` (bool): Uri: exclude punctuation-only tokens in candidate and reference
-        - :param: `sources` (list of str): Uri: a list of a source for each candidate, to be concatenated with the candidates
+        - :param: `no_punc` (bool): CodeBERTScore: exclude punctuation-only tokens in candidate and reference
+        - :param: `sources` (list of str): CodeBERTScore: a list of a source for each candidate, to be concatenated with the candidates
                    but removed from the similarity computation
-        - :param: `chunk_overlap` (float): Uri: how much overlap between chunks, when the input is longer than the models' max length
+        - :param: `chunk_overlap` (float): CodeBERTScore: how much overlap between chunks, when the input is longer than the models' max length
 
     Return:
         - :param: `(P, R, F)`: each is of shape (N); N = number of input

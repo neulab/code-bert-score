@@ -30,15 +30,15 @@ SCIBERT_URL_DICT = {
 
 
 lang2model = defaultdict(lambda: "microsoft/codebert-base-mlm")
-lang2model.update({
-        "python": "neulab/codebert-python",
-        "javascript": "neulab/codebert-javascript",
-        "js": "neulab/codebert-javascript",
-        "c": "neulab/codebert-c",
-        "cpp": "neulab/codebert-cpp",
-        "c++": "neulab/codebert-cpp",
-        "java": "neulab/codebert-java",
-})
+# lang2model.update({
+#         "python": "anonymized/codebert-python",
+#         "javascript": "anonymized/codebert-javascript",
+#         "js": "anonymized/codebert-javascript",
+#         "c": "anonymized/codebert-c",
+#         "cpp": "anonymized/codebert-cpp",
+#         "c++": "anonymized/codebert-cpp",
+#         "java": "anonymized/codebert-java",
+# })
 
 model2layers = defaultdict(lambda: 10)
 model2layers.update({
@@ -118,7 +118,6 @@ def sent_encode(tokenizer, sent):
         # for RoBERTa and GPT-2
         import transformers
         if LooseVersion(transformers.__version__) >= LooseVersion("3.0.0"):
-            # Uri: truncation=False
             # return tokenizer.encode(sent, add_special_tokens=True, add_prefix_space=True, max_length=tokenizer.max_len, truncation=True)
             return tokenizer.encode(sent, add_special_tokens=True, add_prefix_space=True, max_length=tokenizer.max_len, truncation='do_not_truncate')
         else:
@@ -399,7 +398,7 @@ def greedy_cos_idf(ref_embedding, ref_masks, ref_idf, hyp_embedding, hyp_masks, 
     R = (word_recall * recall_scale).sum(dim=1)
     F = 2 * P * R / (P + R)
 
-    # Uri: computing F3 as in meteor
+    # CodeBERTScore: computing F3 as in meteor
     F3 = 10 * P * R / (9 * P + R)
 
     hyp_zero_mask = hyp_masks.sum(dim=1).eq(2)
