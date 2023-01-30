@@ -410,7 +410,7 @@ def main():
         column_names = raw_datasets["train"].column_names
     else:
         column_names = raw_datasets["validation"].column_names
-    # Uri: changed this line to support the https://huggingface.co/datasets/codeparrot/github-code dataset,
+    # CodeBERTScore: changed this line to support the https://huggingface.co/datasets/codeparrot/github-code dataset,
     # Although it should have worked without this change as well, by taking column_names[0]
     # text_column_name = "text" if "text" in column_names else column_names[0]
     text_column_name = "code" if "code" in column_names else column_names[0]
