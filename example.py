@@ -1,12 +1,15 @@
 import code_bert_score
 import pickle
+from nltk.translate import bleu_score
+from nltk.translate.bleu_score import sentence_bleu
+import re
 
 print('Sanity check:')
 precision, recall, f1, f3 = code_bert_score.score(cands=['void main() {'], refs=['void main() {'], lang='c')
 print(f'P: {precision} R: {recall} F1: {f1}, F3: {f3}')
 
 
-print('Examples from Luke:')
+print('Examples for decompiled code:')
 
 refs = ['int posix_spawn_file_actions_init ( posix_spawn_file_actions_t * fa ) { fa -> __actions = 0 ; return 0 ; }',
     'int strncmp ( const char * _l , const char * _r , size_t n ) { const unsigned char * l = ( void * ) _l ; const unsigned char * r = ( void * ) _r ; if ( ! ( n -- ) ) return 0 ; for ( ; ( ( ( * l ) && ( * r ) ) && n ) && ( ( * l ) == ( * r ) ) ; l ++ , r ++ , n -- ) ; return ( * l ) - ( * r ) ; }',
@@ -25,7 +28,10 @@ decompiled = [
     'long long a_decrypt ( long long a1 , long long a2 , long long a3 , long long a4 , long long a5 , long long a6 , long long a7 , long long a8 , long long a9 , long long a10 , long long a11 , long long a12 ) { return decrypt_with_mechanism ( a1 , a2 , a3 , a12 ) ; }'
 ]
 
-
+def tokenize_for_bleu_eval(code):
+    code = re.sub(r'([^A-Za-z0-9_])', r' \1 ', code)
+    tokens = [t for t in code.split(' ') if t]
+    return tokens
 
 def eval(predictions, decompiled, refs, **kwargs):
     # print('Predictions:')
@@ -40,21 +46,62 @@ def eval(predictions, decompiled, refs, **kwargs):
         print(f'Decompiled precision: {decompiled_results[0][i]}, recall: {decompiled_results[1][i]}, f1: {decompiled_results[2][i]}, f3: {decompiled_results[3][i]}')
         print()
 
-print('Default evaluation:')
-eval(predictions, decompiled, refs)
+# print('Default evaluation:')
+# eval(predictions, decompiled, refs)
 
-print('Remove punctiation-only tokens after encoding:')
-eval(predictions, decompiled, refs, no_punc=True)
+# print('Remove punctiation-only tokens after encoding:')
+# eval(predictions, decompiled, refs, no_punc=True)
 
-print('Test long inputs (the model will chunk the inputs with overlap, and concatenate the outputs):')
-eval([' '.join(predictions) * 5], [' '.join(decompiled) * 5], [' '.join(refs) * 5])
+# print('Test long inputs (the model will chunk the inputs with overlap, and concatenate the outputs):')
+# eval([' '.join(predictions) * 5], [' '.join(decompiled) * 5], [' '.join(refs) * 5])
 
-print('Test with sources:')
-eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'])
+# print('Test with sources:')
+# eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'])
 
-print('Test with sources and no_punc:')
-eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'], no_punc=True)
+# print('Test with sources and no_punc:')
+# eval(predictions, decompiled, refs, sources=['// Init fa actions', '// compare two strings', '// Decrypt'], no_punc=True)
 
 with open('java_idf.pkl', 'rb') as f:
     java_idf = pickle.load(f)
-eval(predictions, decompiled, refs, no_punc=True, sources=['// Init fa actions', '// compare two strings', '// Decrypt'], idf=java_idf)
+# eval(predictions, decompiled, refs, no_punc=True, sources=['// Init fa actions', '// compare two strings', '// Decrypt'], idf=java_idf,)
+
+predictions = ["""boolean f(Object target) {
+    for (Object elem: this.elements) {
+        if (elem.equals(target)) {
+            return true;
+        }
+    }
+    return false;
+}""", 
+"""int f(Object target) {
+    for (int i=0; i<this.elements.size(); i++) {
+        Object elem = this.elements.get(i);
+        if (elem.equals(target)) {
+            return i;
+        }
+    }
+    return -1;
+}"""
+]
+
+refs = [ \
+"""int f(Object target) {
+    int i = 0;
+    for (Object elem: this.elements) {
+        if (elem.equals(target)) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}"""] * len(predictions)
+
+pred_results = code_bert_score.score(cands=predictions, refs=refs, no_punc=True, lang='java', idf=java_idf)
+
+for i in range(len(refs)):
+    print(f'Example {i}:')
+    print(f'Prediction precision: {pred_results[0][i]}, recall: {pred_results[1][i]}, f1: {pred_results[2][i]}, f3: {pred_results[3][i]}')
+    print()
+    ref_tokens = tokenize_for_bleu_eval(refs[i])
+    pred_tokens = tokenize_for_bleu_eval(predictions[i])
+    print(f'BLEU score: {sentence_bleu([ref_tokens], pred_tokens)}')
