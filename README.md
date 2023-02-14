@@ -68,12 +68,5 @@ The [`run_mlm.py`](./run_mlm.py) script can be used to fine-tune the base model 
 
 ## Human Evaluation
 
-![](./images/human.png "Example")
+We are in the process of performing a human evaluation that measures the correlation between CodeBERTScore and human judgement.
 
-We find that CodeBERTScore is more correlated with human preference compared to a variety of common metrics. See more details in the [paper](https://arxiv.org/pdf/2302.05527.pdf).
-
-## Functional Correctness
-
-![](./images/functional.png "Example")
-
-We find that CodeBERTScore is more correlated with functional correctness compared to a variety of common metrics. See more details in the [paper](https://arxiv.org/pdf/2302.05527.pdf).
