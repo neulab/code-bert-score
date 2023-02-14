@@ -1,28 +1,20 @@
 # CodeBERTScore
-This is the official implementation of the paper:
+<!-- [![made-with-python](https://img.shields.io/badge/Made%20with-Python-red.svg)](#python) [![PyPI version bert-score](https://badge.fury.io/py/bert-score.svg)](https://pypi.python.org/pypi/bert-score/) [![Downloads](https://pepy.tech/badge/bert-score)](https://pepy.tech/project/bert-score) [![Downloads](https://pepy.tech/badge/bert-score/month)](https://pepy.tech/project/bert-score/month) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)  -->
 
-Shuyan Zhou, Uri Alon, Sumit Agarwal, Graham Neubig, [CodeBERTScore: Evaluating Code Generation with Pretrained Models of Code](https://arxiv.org/pdf/2302.05527.pdf)
+An Automatic Evaluation Metric for Code, based on [BERTScore](https://arxiv.org/abs/1904.09675).
 
-CodeBERTScore is an Automatic Evaluation Metric for Code, based on [BERTScore](https://arxiv.org/abs/1904.09675).
 This repository is based on the code of [BERTScore](https://github.com/Tiiiger/bert_score), and we are grateful to the authors for releasing their code.
 
-## Example:
-
-![](./images/example.png "Example")
-
-Figure (a) shows a reference code snippet in Java. Figures (b) and (c) show two generated predictions. Among these two candidates and given the reference, BLEU prefers (scores higher) the code in (b), which is not functionally equivalent to the reference, while CodeBERTScore prefers the code in (c), which is functionaly equivalent to the reference.
-
-## How does it work?
-
-![](./images/flow.png "Example")
-
-As BERTScore, CodeBERTScore leverages the pre-trained contextual embeddings from a model such as CodeBERT and matches
+### Background: BERTScore
+BERTScore leverages the pre-trained contextual embeddings from BERT and matches
 words in candidate and reference sentences by cosine similarity.
-Differently from BERTScore, CodeBERTScore also encodes natural language input or other context along with the generated code, but does not use that context to compute cosine similarities.
+It has been shown to correlate with human judgment on sentence-level and
+system-level evaluation.
+Moreover, BERTScore computes precision, recall, and F1 measure, which can be
+useful for evaluating different language generation tasks.
 
-This example shows how CodeBERTScore can compute the similarity between the Python expressions `x ** 0.5` and `math.sqrt(x)`, which are functionally equivalent, even though they have very few overlapping tokens.
-
-
+For an illustration, BERTScore recall can be computed as
+![](./bert_score.png "BERTScore")
 
 ## Usage
 ```
