@@ -554,8 +554,8 @@ def mark_all_punc_tokens(tokens):
     return torch.tensor([not all_punc(strip_whitespace(tok)) for tok in tokens])
 
 def get_hash(model, num_layers, idf, rescale_with_baseline, use_custom_baseline):
-    msg = "{}_L{}{}_version={}(hug_trans={})".format(
-        model, num_layers, "_idf" if idf else "_no-idf", __version__, trans_version
+    msg = "{}_L{}{}".format(
+        model, num_layers, "_idf" if idf else "_no-idf",
     )
     if rescale_with_baseline:
         if use_custom_baseline:
