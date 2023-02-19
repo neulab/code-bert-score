@@ -6,6 +6,18 @@ Shuyan Zhou, Uri Alon, Sumit Agarwal, Graham Neubig, [CodeBERTScore: Evaluating 
 CodeBERTScore is an Automatic Evaluation Metric for Code, based on [BERTScore](https://arxiv.org/abs/1904.09675).
 This repository is based on the code of [BERTScore](https://github.com/Tiiiger/bert_score), and we are grateful to the authors for releasing their code.
 
+---
+* [Example](#example-)
+* [How does it work?](#how-does-it-work-)
+* [Usage](#usage)
+* [Additional Features](#additional-features)
+* [Backend Model](#backend-model)
+* [Training](#training)
+* [Evaluation](#evaluation)
+    + [Human Evaluation](#human-evaluation)
+    + [Functional Correctness](#functional-correctness)
+* [Citation](#citation)
+
 ## Example:
 
 ![](./images/example.png "Example")
