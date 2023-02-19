@@ -66,14 +66,27 @@ all other languages currently use the `microsoft/codebert-base-mlm` model.
 ## Training
 The [`run_mlm.py`](./run_mlm.py) script can be used to fine-tune the base model `microsoft/codebert-base-mlm` on specific languages.
 
-## Human Evaluation
+## Evaluation
+The code to reproduce the results in the paper can be found in the [evaluation](./evaluation/README.md).
+### Human Evaluation
 
 ![](./images/human.png "Example")
 
 We find that CodeBERTScore is more correlated with human preference compared to a variety of common metrics. See more details in the [paper](https://arxiv.org/pdf/2302.05527.pdf).
 
-## Functional Correctness
+### Functional Correctness
 
 ![](./images/functional.png "Example")
 
 We find that CodeBERTScore is more correlated with functional correctness compared to a variety of common metrics. See more details in the [paper](https://arxiv.org/pdf/2302.05527.pdf).
+
+## Citation
+```
+@article{zhou2023codebertscore,
+  url = {https://arxiv.org/abs/2302.05527},
+  author = {Zhou, Shuyan and Alon, Uri and Agarwal, Sumit and Neubig, Graham},
+  title = {CodeBERTScore: Evaluating Code Generation with Pretrained Models of Code},  
+  publisher = {arXiv},
+  year = {2023},
+}
+```
