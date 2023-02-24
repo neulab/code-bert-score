@@ -43,7 +43,7 @@ pred_results = code_bert_score.score(cands=predictions, refs=refs, lang='python'
 ```
 Where `pred_results` is a 4-tuple of `(precision, recall, F1, F3)`, where each is a 1-D tensor of scores for each prediction-reference pair. `F3` is similar to the well-known `F1` score, that considers recall 3 times as important as precision. See the [definition on Wikipedia](https://en.wikipedia.org/wiki/F-score#F%CE%B2_score).
 
-
+See our [example.py](./example.py) script. Additional details are shown in the original BERTScore [demo notebook](./example/Demo.ipynb).
 
 ## Backend Model
 We fine-tuned the `microsoft/codebert-base-mlm` model for 1,000,000 steps (with `batch_size=32`) on several languages separately.
@@ -75,7 +75,7 @@ Our IDF dicts can be found in [./idf_dicts/](./idf_dicts/).
 * We found that more accurate results are achieved by encoding the *entire* inputs, but measures the similarity only between non-punctuation and non-whitespace tokens. To disable the removal of punctuation toksn, use `no_punc=False`. 
 
 
-See also our [example.py](./example.py) and the original BERTScore [demo notebook](./example/Demo.ipynb).
+See also our [example.py](./example.py) script. Additional details are shown in the original BERTScore [demo notebook](./example/Demo.ipynb).
 
 ## Training
 The [`run_mlm.py`](./run_mlm.py) script can be used to fine-tune the base model `microsoft/codebert-base-mlm` on specific languages.
