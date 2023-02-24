@@ -40,7 +40,7 @@ def score(
     return_hash=False,
     rescale_with_baseline=False,
     baseline_path=None,
-    no_punc=False,
+    no_punc=True,
     sources=None,
     chunk_overlap=0.5
 ):
