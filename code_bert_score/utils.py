@@ -43,6 +43,11 @@ lang2model.update({
 model2layers = defaultdict(lambda: 10)
 model2layers.update({
     "microsoft/codebert-base-mlm": 10,
+    "neulab/codebert-python": 11,
+    "neulab/codebert-javascript": 10,
+    "neulab/codebert-c": 10,
+    "neulab/codebert-cpp": 10,
+    "neulab/codebert-java": 7,
     # "codebert_c_100k_base": 10,
     # "bert-base-uncased": 9,  # 0.6925188074454226
     # "bert-large-uncased": 18,  # 0.7210358126642836
