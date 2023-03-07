@@ -449,6 +449,8 @@ def bert_cos_score_idf(
         - :param: `device` (str): device to use, e.g. 'cpu' or 'cuda'
     """
     preds = []
+    refs = [r.strip() for r in refs]
+    hyps = [h.strip() for h in hyps]
 
     if sources is None:
         def dedup_and_sort(l):
@@ -456,7 +458,7 @@ def bert_cos_score_idf(
     else:
         assert len(hyps) == len(sources)
         assert len(refs) == len(sources)
-        sources = [f'{s} \n' for s in sources]
+        sources = [f'{s.strip()} \n' for s in sources]
         hyps = [f'{s}{h}' for s,h in zip(sources, hyps)]
         refs = [f'{s}{r}' for s,r in zip(sources, refs)]
 
