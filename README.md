@@ -45,7 +45,7 @@ Where `pred_results` is a 4-tuple of `(precision, recall, F1, F3)`, where each i
 
 See our [example.py](./example.py) script. Additional details are shown in the original BERTScore [demo notebook](./example/Demo.ipynb).
 
-## Backend Model
+## Huggingface 🤗 Models
 We fine-tuned the `microsoft/codebert-base-mlm` model for 1,000,000 steps (with `batch_size=32`) on several languages separately.
 
 We released the following models to the Huggingface hub:
@@ -55,7 +55,14 @@ We released the following models to the Huggingface hub:
 * `neulab/codebert-cpp` (the default model for `lang='cpp'` or `'c++'`)
 * `neulab/codebert-java` (the default model for `lang='java'`)
 
-all other languages currently use the `microsoft/codebert-base-mlm` model.
+The appropriate model will be loaded automatically when passing the `lang` argument to the `score(..)` function, for example: `lang='python'`. 
+For other uses, these models can be loaded using (for example):
+```python
+from transformers import AutoTokenizer, AutoModelForMaskedLM
+
+tokenizer = AutoTokenizer.from_pretrained("neulab/codebert-python")
+model = AutoModelForMaskedLM.from_pretrained("neulab/codebert-python")
+```
 
 ## Additional Features
 
