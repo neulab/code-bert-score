@@ -417,11 +417,13 @@ def greedy_cos_idf(ref_embedding, ref_masks, ref_idf, hyp_embedding, hyp_masks, 
         F3 = F3.view(L, B)
 
     if torch.any(hyp_zero_mask):
-        print("Warning: Empty candidate sentence detected; setting precision to be 0.", file=sys.stderr)
+        print("Warning: Empty candidate sentence detected; setting precision and recall to be 0.", file=sys.stderr)
         P = P.masked_fill(hyp_zero_mask, 0.0)
+        R = R.masked_fill(hyp_zero_mask, 0.0)
 
     if torch.any(ref_zero_mask):
-        print("Warning: Empty reference sentence detected; setting recall to be 0.", file=sys.stderr)
+        print("Warning: Empty reference sentence detected; setting precision and recall to be 0.", file=sys.stderr)
+        P = P.masked_fill(ref_zero_mask, 0.0)
         R = R.masked_fill(ref_zero_mask, 0.0)
 
     F = F.masked_fill(torch.isnan(F), 0.0)
@@ -459,8 +461,8 @@ def bert_cos_score_idf(
         assert len(hyps) == len(sources)
         assert len(refs) == len(sources)
         sources = [f'{s.strip()} \n' for s in sources]
-        hyps = [f'{s}{h}' for s,h in zip(sources, hyps)]
-        refs = [f'{s}{r}' for s,r in zip(sources, refs)]
+        hyps = [f'{s}{h}'.strip() for s,h in zip(sources, hyps)]
+        refs = [f'{s}{r}'.strip() for s,r in zip(sources, refs)]
 
         # we need to do this because later we do:
         # sentences = dedup_and_sort(refs + hyps)
@@ -477,7 +479,7 @@ def bert_cos_score_idf(
         iter_range = tqdm(iter_range)
     stats_dict = dict()
     for batch_start in iter_range:
-        sen_batch = sentences[batch_start : batch_start + batch_size]
+        sen_batch = [sen.strip() for sen in sentences[batch_start : batch_start + batch_size]]
         embs, masks, padded_idf = get_bert_embedding(
             sen_batch, model, tokenizer, idf_dict, device=device, all_layers=all_layers,
             chunk_overlap=chunk_overlap
@@ -499,8 +501,8 @@ def bert_cos_score_idf(
                         source_length = j
                     else:
                         break
-                # The input is of the format: "<bos> <source> <code>"
-                # So we the <bos> token and the code, removing the source
+                # The input is of the format: "<bos> <source> <code> <eos>"
+                # So we take "<bos> <code> <eos>", removing the source
                 emb = torch.cat([emb[0].unsqueeze(0), emb[source_length:]], axis=0)
                 idf = torch.cat([idf[0].unsqueeze(0), idf[source_length:]], axis=0)
                 tokens = tokens[0:1] + tokens[source_length:]

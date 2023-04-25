@@ -56,6 +56,7 @@ if __name__ == '__main__':
     with open('idf_dicts/java_idf.pkl', 'rb') as f:
         java_idf = pickle.load(f)
 
+    pred_results = code_bert_score.score([''],['a'], sources=["a"], lang="python")
     pred_results = code_bert_score.score(cands=predictions, refs=refs, no_punc=True, lang='java', idf=java_idf)
     print_results(predictions, refs, pred_results)
 
