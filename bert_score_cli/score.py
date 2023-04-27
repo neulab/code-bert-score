@@ -17,7 +17,7 @@ def main():
         help='two-letter abbreviation of the language (e.g., en) or "en-sci" for scientific text',
     )
     parser.add_argument(
-        "-m", "--model", default=None, help="BERT model name (default: bert-base-uncased) or path to a pretrain model"
+        "-m", "--model", default=None, help="BERT model name (default: codebert-base) or path to a pretrain model"
     )
     parser.add_argument("-l", "--num_layers", type=int, default=None, help="use first N layer in BERT (default: 8)")
     parser.add_argument("-b", "--batch_size", type=int, default=64, help="batch size (default: 64)")
@@ -33,6 +33,12 @@ def main():
     parser.add_argument(
         "-c", "--cand", type=str, required=True, help="candidate (system outputs) file path or a string"
     )
+    parser.add_argument("--no_punc", action="store_true", help="exclude punctuation-only tokens in candidate and reference")
+    parser.add_argument(
+        "--sources", type=str, required=True, help="a list of a source for each candidate, to be concatenated"
+        "with the candidates but removed from the similarity computation"
+    )
+    parser.add_argument("--chunk_overlap", type=float, default=0.5, help="how much overlap between chunks, when the input is longer than the models' max length")
 
     args = parser.parse_args()
 
@@ -67,17 +73,21 @@ def main():
         return_hash=True,
         rescale_with_baseline=args.rescale_with_baseline,
         baseline_path=args.baseline_path,
+        no_punc=args.no_punc,
+        sources=args.sources,
+        chunk_overlap=args.chunk_overlap,
     )
     avg_scores = [s.mean(dim=0) for s in all_preds]
     P = avg_scores[0].cpu().item()
     R = avg_scores[1].cpu().item()
     F1 = avg_scores[2].cpu().item()
-    msg = hash_code + f" P: {P:.6f} R: {R:.6f} F1: {F1:.6f}"
+    F3 = avg_scores[3].cpu().item()
+    msg = hash_code + f" P: {P:.6f} R: {R:.6f} F1: {F1:.6f} F3: {F3:.6f}"
     print(msg)
     if args.seg_level:
-        ps, rs, fs = all_preds
-        for p, r, f in zip(ps, rs, fs):
-            print("{:.6f}\t{:.6f}\t{:.6f}".format(p, r, f))
+        ps, rs, fs, f3s = all_preds
+        for p, r, f, f3 in zip(ps, rs, fs, f3s):
+            print("{:.6f}\t{:.6f}\t{:.6f}\t{:.6f}".format(p, r, f, f3))
 
 
 if __name__ == "__main__":
