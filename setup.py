@@ -12,7 +12,7 @@ setup(
     keywords='BERT NLP deep learning google metric',
     license='MIT',
     url="https://github.com/neulab/code-bert-score",
-    download_url = 'https://github.com/neulab/code-bert-score/archive/refs/tags/v0.4.0.zip',
+    download_url = 'https://github.com/neulab/code-bert-score/archive/refs/tags/v0.4.0.tar.gz',
     packages=find_packages(exclude=["*.tests", "*.tests.*",
                                     "tests.*", "tests"]),
     install_requires=['torch>=1.0.0',
