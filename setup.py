@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="code_bert_score",
-    version='0.3.5',
+    version='0.4.0',
     author="Shuyan Zhou, Uri Alon, Sumit Agarwal, and Graham Neubig",
     author_email="urialon1@gmail.com",
     description="PyTorch implementation of Code BERT score",
@@ -12,6 +12,7 @@ setup(
     keywords='BERT NLP deep learning google metric',
     license='MIT',
     url="https://github.com/neulab/code-bert-score",
+    download_url = 'https://github.com/neulab/code-bert-score/archive/refs/tags/v0.4.0.zip',
     packages=find_packages(exclude=["*.tests", "*.tests.*",
                                     "tests.*", "tests"]),
     install_requires=['torch>=1.0.0',
