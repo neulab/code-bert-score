@@ -164,10 +164,10 @@ def score(
                 baselines = torch.from_numpy(pd.read_csv(baseline_path).iloc[num_layers].to_numpy())[1:].float()
             else:
                 baselines = torch.from_numpy(pd.read_csv(baseline_path).to_numpy())[:, 1:].unsqueeze(1).float()
-
-            all_preds = (all_preds - baselines) / (1 - baselines)
         else:
-            print(f"Warning: Baseline not Found for {model_type} on {lang} at {baseline_path}", file=sys.stderr)
+            # print(f"Warning: Baseline not Found for {model_type} on {lang} at {baseline_path}", file=sys.stderr)
+            baselines = 0.5
+        all_preds = (all_preds - baselines) / (1 - baselines)
 
     out = all_preds[..., 0], all_preds[..., 1], all_preds[..., 2], all_preds[..., 3]  # P, R, F, F3
 
@@ -252,9 +252,11 @@ def plot_example(
             baseline_path = os.path.join(os.path.dirname(__file__), f"rescale_baseline/{lang}/{model_type}.tsv")
         if os.path.isfile(baseline_path):
             baselines = torch.from_numpy(pd.read_csv(baseline_path).iloc[num_layers].to_numpy())[1:].float()
-            sim = (sim - baselines[2].item()) / (1 - baselines[2].item())
+            baseline = baselines[2].item()
         else:
-            print(f"Warning: Baseline not Found for {model_type} on {lang} at {baseline_path}", file=sys.stderr)
+            # print(f"Warning: Baseline not Found for {model_type} on {lang} at {baseline_path}", file=sys.stderr)
+            baseline = 0.5
+        sim = (sim - baseline) / (1 - baseline)
 
     import matplotlib.pyplot as plt
     from mpl_toolkits.axes_grid1 import make_axes_locatable

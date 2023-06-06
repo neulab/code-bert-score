@@ -56,16 +56,19 @@ if __name__ == '__main__':
     with open('idf_dicts/java_idf.pkl', 'rb') as f:
         java_idf = pickle.load(f)
 
-    # pred_results = code_bert_score.score([''],['a'], sources=["a"], lang="python")
-    # pred_results = code_bert_score.score(cands=predictions, refs=refs, no_punc=True, lang='java', idf=java_idf)
-    # print_results(predictions, refs, pred_results)
+    pred_results = code_bert_score.score([''],['a'], sources=["a"], lang="python")
+    pred_results = code_bert_score.score(cands=predictions, refs=refs, no_punc=True, lang='java', idf=java_idf)
+    print_results(predictions, refs, pred_results)
 
-    # print('When providing the context: "find the index of target in this.elements"')
-    # pred_results = code_bert_score.score(cands=predictions, refs=refs, no_punc=True, lang='java', idf=java_idf, sources=['find the index of target in this.elements'] * 2)
-    # print_results(predictions, refs, pred_results)
+    print('When providing the context: "find the index of target in this.elements"')
+    pred_results = code_bert_score.score(cands=predictions, refs=refs, no_punc=True, lang='java', idf=java_idf, sources=['find the index of target in this.elements'] * 2)
+    print_results(predictions, refs, pred_results)
 
 
     with open('idf_dicts/python_idf.pkl', 'rb') as f:
         python_idf = pickle.load(f)
     pred_results = code_bert_score.score(cands=['math.sqrt(x)'], refs=[['x ** 0.5']], no_punc=True, lang='python', idf=python_idf)
+    print(pred_results)
+
+    pred_results = code_bert_score.score(cands=['math.sqrt(x)'], refs=[['x ** 0.5']], rescale_with_baseline=True, lang='en')
     print(pred_results)
