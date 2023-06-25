@@ -81,7 +81,7 @@ Our IDF dicts can be found in [./idf_dicts/](./idf_dicts/).
 
 ![](./images/layer.jpg "Layers")
 
-* We found that more accurate results are achieved by encoding the *entire* inputs, but measures the similarity only between non-punctuation and non-whitespace tokens. To disable the removal of punctuation toksn, use `no_punc=False`. 
+* We found that more accurate results are achieved by encoding the *entire* inputs, but measures the similarity only between non-punctuation and non-whitespace tokens. To disable the removal of punctuation tokens, use `no_punc=False`. 
 
 
 See also our [example.py](./example.py) script. Additional details are shown in the original BERTScore [demo notebook](./example/Demo.ipynb).
